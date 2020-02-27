@@ -1,0 +1,53 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_youtube_view (1.1.4):
+    - Flutter
+    - YoutubeKit
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - sqflite (0.0.1):
+    - Flutter
+    - FMDB (~> 2.7.2)
+  - webview_flutter (0.0.1):
+    - Flutter
+  - youtube_api (0.2.1):
+    - Flutter
+  - YoutubeKit (0.4.0)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_youtube_view (from `.symlinks/plugins/flutter_youtube_view/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
+  - youtube_api (from `.symlinks/plugins/youtube_api/ios`)
+
+SPEC REPOS:
+  trunk:
+    - FMDB
+    - YoutubeKit
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_youtube_view:
+    :path: ".symlinks/plugins/flutter_youtube_view/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
+  webview_flutter:
+    :path: ".symlinks/plugins/webview_flutter/ios"
+  youtube_api:
+    :path: ".symlinks/plugins/youtube_api/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_youtube_view: f9937ac435a82a758189c78c7a8828ec56fb0def
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
+  webview_flutter: bec7599de6bfbe8008a739aa3ebd7b364ea9d0cd
+  youtube_api: 3e3c2faa0cf3f296204bcc93284cdb097f42cdd6
+  YoutubeKit: 10c74151790b570001b19403d2c60b2fb540a1fe
+
+PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
+
+COCOAPODS: 1.8.4
