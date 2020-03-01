@@ -16,9 +16,11 @@ enum LessonLevel {
 class TopicDesc
 {
   String topicId;
+  String section;
 
   String name;
   String imageAssetPath;
+  String description;
   // List<SubCategoryDesc> subCateList;
 
   List<String> tags;

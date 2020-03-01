@@ -206,9 +206,12 @@ class LessonCardWidget extends StatelessWidget {
     List<Widget> stage = List<Widget>();
     List<int> progs = desc.getProgressStatus();
 
-    double step = barSize / (progs[0]);
+    double step = (barSize) / (progs[0]);
 
     for (int i = 0; i < progs[0]; i++) {
+      if( i == (progs[0]-1))
+          step = 0;
+
       Widget point = Padding(
           padding: EdgeInsets.only(left: 0, right: step),
           child: Icon(Icons.brightness_1, size: 10, color: Colors.white));
@@ -355,6 +358,9 @@ class LessonCardSimpleWidget extends StatelessWidget {
     double step = barSize / (progs[0]);
 
     for (int i = 0; i < progs[0]; i++) {
+      if( i == (progs[0]-1))
+        step = 0;
+
       Widget point = Padding(
           padding: EdgeInsets.only(left: 0, right: step),
           child: Icon(Icons.brightness_1, size: 10, color: Colors.white));
@@ -369,7 +375,7 @@ class LessonCardSimpleWidget extends StatelessWidget {
         child: Stack(
           children: [
             okProgressBar(width: barSize, height: 10, p: 0.75),
-            Row(children: stage),
+           Row(children: stage),
             Positioned(
               left: 0,
               bottom: 5,

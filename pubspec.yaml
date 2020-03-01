@@ -30,6 +30,7 @@ dependencies:
   flutter_youtube_view: ^1.1.7
   youtube_api: ^0.7.2
   sprintf: ^4.0.0
+  flappy_search_bar: ^1.7.2
 
 dev_dependencies:
   flutter_test:

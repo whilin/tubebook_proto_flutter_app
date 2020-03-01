@@ -121,7 +121,10 @@ class LessonPageState extends State<LessonPage> {
         itemBuilder: (context, index) {
           return Consumer<PlayerStateNotifier>(builder: (_, playState, __) {
             if (index == 0)
-              return LessonCardSimpleWidget(widget.desc);
+              return Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: LessonCardSimpleWidget(widget.desc),
+              );
             else if (index <= itemCount)
               return _videoItem(videoDescList[index - 1]);
             else
@@ -170,53 +173,56 @@ class LessonPageState extends State<LessonPage> {
       playIcon = Icons.radio_button_unchecked;
 
     return Container(
-      margin: EdgeInsets.only(top: 8.0),
-      height: 74,
-      //color: Colors.amber,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          GestureDetector(
-              onTap: () {
-                OnSelectVideo(desc);
-              },
-              child: Padding(
+        margin: EdgeInsets.only(top: 8.0),
+        height: 74,
+        //color: Colors.amber,
+        child: GestureDetector(
+          onTap: () {
+            OnSelectVideo(desc);
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
                   padding: EdgeInsets.only(right: 5, left: 5),
-                  child: Icon(playIcon, size: 40, color: Colors.white))),
-          Padding(
-              padding: EdgeInsets.only(left: 0, right: 0),
-              child: SizedBox(width: 80, height: 74, child: thumnail)),
-          Expanded(
-            child: Container(
-              color: Colors.black45,
-              child: Stack(
-                  //crossAxisAlignment: CrossAxisAlignment.start,
-                  // mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Positioned(
-                        left: 5,
-                        top: 5,
-                        child: Text(desc.snippet.title,
-                            style: Styles.font15Text,
-                            overflow: TextOverflow.ellipsis)),
-                    Positioned(
-                        left: 10,
-                        bottom: 6,
-                        child: Text(timeText,
-                            textAlign: TextAlign.right,
-                            style: Styles.font10Text,
-                            overflow: TextOverflow.ellipsis)),
-                    Positioned(
-                      left: 80,
-                      bottom: 9,
-                      child: okProgressBar(width: 200, height: 8, p: p),
-                    )
-                  ]),
-            ),
-          )
-        ],
-      ),
-    );
+                  child: Icon(playIcon, size: 40, color: Colors.white)),
+              Padding(
+                  padding: EdgeInsets.only(left: 0, right: 0),
+                  child: SizedBox(width: 80, height: 74, child: thumnail)),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 0),
+                  child: Container(
+                    color: Colors.black45,
+                    child: Stack(
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Positioned(
+                              left: 5,
+                              top: 5,
+                              child: Text(desc.snippet.title,
+                                  style: Styles.font15Text,
+                                  overflow: TextOverflow.ellipsis)),
+                          Positioned(
+                              left: 10,
+                              bottom: 6,
+                              child: Text(timeText,
+                                  textAlign: TextAlign.right,
+                                  style: Styles.font10Text,
+                                  overflow: TextOverflow.ellipsis)),
+                          Positioned(
+                            left: 80,
+                            bottom: 9,
+                            child: okProgressBar(width: 200, height: 8, p: p),
+                          )
+                        ]),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ));
   }
 }

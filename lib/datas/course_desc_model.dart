@@ -37,6 +37,11 @@ class LessonDescModel with ChangeNotifier {
     return _topiclist;
   }
 
+  List<TopicDesc> getTopicListBySection(String section)
+  {
+    return _topiclist.where((e)=> e.section == section).toList();
+  }
+
   List<LessonDesc> queryLessionListByTopic(String topicId)
   {
     var iter = _lessonList.where((e) => e.mainTopicId == topicId);

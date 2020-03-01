@@ -20,21 +20,27 @@ class LocalDataLoader {
     desc = TopicDesc()
       ..topicId = 'flutter_topic'
       ..name = 'Flutter'
+      ..section = 'CrossPlatformApp'
       ..imageAssetPath = 'assets/title_java.png'
+      ..description = 'Google에서 만든 CrossPlatorm'
       ..tags = ['Widget', 'Async', 'Database', 'Networking'];
     _topiclist.add(desc);
 
     desc = TopicDesc()
       ..topicId = 'swift_topic'
       ..name = 'Swift'
+      ..section = 'NativeApp'
       ..imageAssetPath = 'assets/title_swift.jpg'
+      ..description = 'Google에서 만든 CrossPlatorm'
       ..tags = [];
     _topiclist.add(desc);
 
     desc = TopicDesc()
       ..topicId = 'android_topic'
       ..name = 'Android'
+      ..section = 'NativeApp'
       ..imageAssetPath = "assets/title_android.png"
+      ..description = 'Google에서 만든 CrossPlatorm'
       ..tags = [];
     _topiclist.add(desc);
 
