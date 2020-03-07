@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mydemo_tabnavi2/common_widgets/widgets.dart';
-import 'package:mydemo_tabnavi2/datas/course_data_define.dart';
-import 'package:mydemo_tabnavi2/datas/course_desc_model.dart';
-import 'package:mydemo_tabnavi2/datas/course_play_model.dart';
+import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
+import 'package:mydemo_tabnavi2/datas/DataUtils.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/pages/lesson_card_widget.dart';
-import 'package:mydemo_tabnavi2/pages/video_player_2.dart';
+import 'package:mydemo_tabnavi2/pages/video_player_widget.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:mydemo_tabnavi2/widgets/okProgressBar.dart';
 import 'package:provider/provider.dart';
@@ -43,10 +44,10 @@ class LessonPageState extends State<LessonPage> {
     super.initState();
 
     videoDescList =
-        LessonDescModel.singleton().queryVideoList(widget.desc.videoList);
+        LessonDescManager.singleton().queryVideoList(widget.desc.videoList);
     for (var desc in videoDescList) {
       videoDataList
-          .add(LessonPlayModel.singleton().getVideoData(desc.videoKey));
+          .add(LessonDataManager.singleton().getVideoData(desc.videoKey));
     }
 
     activeIndex = videoDescList.length > 0 ? 0 : -1;
@@ -76,36 +77,38 @@ class LessonPageState extends State<LessonPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return CupertinoPageScaffold(
+    return Scaffold(
         backgroundColor: Styles.appBackground,
-        navigationBar: CupertinoNavigationBar(
+        appBar: AppBar(
           backgroundColor: Styles.appBackground,
           leading:
               Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            GestureDetector(
-                child: Icon(
-                  CupertinoIcons.clear_thick,
-                  color: Colors.white,
-                ),
-                onTap: () {
+            IconButton(
+                icon: Icon(Icons.close),
+                onPressed : () {
                   Navigator.of(context).pop();
                 }),
             Padding(
                 padding: EdgeInsets.only(top: 5),
                 child: Text(
-                  "", //widget.desc.title,
+                  "",///widget.desc.title,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white),
                 ))
           ]),
-          trailing: okSelectableIcon(
-              initSelected: widget.data.favorited,
-              onChangeState: (bool sel) {
-                widget.data.favorited = sel;
-                LessonPlayModel.singleton().notifyListeners();
-              }),
+          title: Text(widget.desc.title, style: Styles.font15Text, textAlign: TextAlign.center,),
+          actions: [
+            okSelectableIcon(
+              iconDataOn: Icons.favorite,
+                iconDataOff: Icons.favorite_border,
+                initSelected: widget.data.favorited,
+                onChangeState: (bool sel) {
+                  widget.data.favorited = sel;
+                  LessonDataManager.singleton().notifyListeners();
+                })
+          ],
         ),
-        child: ChangeNotifierProvider<PlayerStateNotifier>.value(
+        body: ChangeNotifierProvider<PlayerStateNotifier>.value(
             value: playState,
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               VideoPlayerY(videoId: getActiveVideoKey()),
@@ -152,12 +155,11 @@ class LessonPageState extends State<LessonPage> {
       alignment: Alignment.topLeft,
     );
 
-    VideoData data = LessonPlayModel.singleton().getVideoData(desc.videoKey);
+    VideoData data = LessonDataManager.singleton().getVideoData(desc.videoKey);
 
     // desc.snippet.
-    String timeText = desc
-        .playTimeText; //'${desc.snippet.durationH}H ${desc.snippet.durationM}분 ${desc.snippet.durationS}초';
-    double p = desc.progress;
+    String timeText = desc.playTimeText; //'${desc.snippet.durationH}H ${desc.snippet.durationM}분 ${desc.snippet.durationS}초';
+    double p = getVideoProgress(desc);
 
     //double totalTime = desc.snippet.durationM * 60.0 + desc.snippet.durationS;
     //double playTime = data.time;
@@ -168,7 +170,7 @@ class LessonPageState extends State<LessonPage> {
     if (data.completed)
       playIcon = Icons.brightness_1;
     else if (data.time > 0)
-      playIcon = Icons.play_circle_outline;
+      playIcon = Icons.play_arrow;
     else
       playIcon = Icons.radio_button_unchecked;
 
@@ -185,11 +187,11 @@ class LessonPageState extends State<LessonPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.only(right: 5, left: 5),
-                  child: Icon(playIcon, size: 40, color: Colors.white)),
+                  padding: EdgeInsets.only(right: 0, left: 0),
+                  child: Icon(playIcon, size: 38, color: Colors.white)),
               Padding(
                   padding: EdgeInsets.only(left: 0, right: 0),
-                  child: SizedBox(width: 80, height: 74, child: thumnail)),
+                  child: SizedBox(width: 98, height: 74, child: thumnail)),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 0),
@@ -206,16 +208,19 @@ class LessonPageState extends State<LessonPage> {
                                   style: Styles.font15Text,
                                   overflow: TextOverflow.ellipsis)),
                           Positioned(
-                              left: 10,
+                              left: 200,
                               bottom: 6,
-                              child: Text(timeText,
+                              child: SizedBox(
+                                  width : 70,
+                                  child :
+                                  Text(timeText,
                                   textAlign: TextAlign.right,
                                   style: Styles.font10Text,
-                                  overflow: TextOverflow.ellipsis)),
+                                  overflow: TextOverflow.ellipsis))),
                           Positioned(
-                            left: 80,
+                            left: 5,
                             bottom: 9,
-                            child: okProgressBar(width: 200, height: 8, p: p),
+                            child: okProgressBar(width: 190, height: 8, p: p),
                           )
                         ]),
                   ),

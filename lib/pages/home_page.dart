@@ -2,15 +2,17 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mydemo_tabnavi2/datas/course_data_define.dart';
-import 'package:mydemo_tabnavi2/datas/course_desc_model.dart';
-import 'package:mydemo_tabnavi2/pages/topic_detail_page.dart';
+import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
+import 'package:mydemo_tabnavi2/pages/topic_page.dart';
 import 'package:mydemo_tabnavi2/common_widgets/cardWidgets.dart';
 import 'package:provider/provider.dart';
 
 import '../styles.dart';
 
-class TopicsPage extends StatelessWidget {
+class HomePage extends StatelessWidget {
+  /*
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -22,15 +24,34 @@ class TopicsPage extends StatelessWidget {
           child: SafeArea(child: buildList(model)));
     });
   }
+*/
+  @override
+  Widget build(BuildContext context) {
+    final model = Provider.of<LessonDescManager>(context);
 
-  ListView buildList(LessonDescModel model) {
+    // TODO: implement build
+    return Scaffold(
+        //appBar: AppBar(title : Text('hello')),
+        backgroundColor: Color(0xff3C3C3C),
+        body: DecoratedBox(
+            decoration: BoxDecoration(color: Color(0xff3C3C3C)),
+            child: SafeArea(child: buildList(model))));
+  }
+
+  ListView buildList(LessonDescManager model) {
     return ListView(scrollDirection: Axis.vertical, children: [
       Container(
         height: 100,
-        child: Text (
-           'My Tube Study',
+        child: Text(
+          'My Tube Study',
           style: Styles.cardTitleText,
         ),
+      ),
+      FlatButton(
+        child : Text('Save'),
+        onPressed:  () {
+          LessonDataManager.singleton().commitLocalPlayDb();
+        },
       ),
       Container(
         height: 20,
@@ -59,7 +80,7 @@ class TopicsSection extends StatelessWidget {
   List<TopicDesc> list;
 
   TopicsSection.section(String section) {
-    list = LessonDescModel.singleton().getTopicListBySection(section);
+    list = LessonDescManager.singleton().getTopicListBySection(section);
   }
 
   TopicsSection.list(List<TopicDesc> this.list) {}
@@ -67,7 +88,9 @@ class TopicsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return categoryCardListView(list);
+    return Consumer<LessonDescManager>(builder: (_, model, __) {
+      return categoryCardListView(list);
+    });
   }
 
   Widget categoryCardListView(List<TopicDesc> list) {
@@ -118,10 +141,15 @@ class TopicCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return PressableCard(
       onPressed: () {
+//        Navigator.of(context).push<void>(MaterialPageRoute(
+//          builder: (context) => new TopicPage(desc),
+//          fullscreenDialog: false,
+//        ));
         Navigator.of(context).push<void>(CupertinoPageRoute(
-          builder: (context) => new TopicDetailPage(desc),
-          fullscreenDialog: true,
+          builder: (context) => new TopicPage(desc),
+          fullscreenDialog: false,
         ));
+
       },
       child: Stack(
         children: [

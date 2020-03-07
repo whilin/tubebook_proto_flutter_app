@@ -3,9 +3,10 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mydemo_tabnavi2/common_widgets/widgets.dart';
-import 'package:mydemo_tabnavi2/datas/course_data_define.dart';
-import 'package:mydemo_tabnavi2/datas/course_desc_model.dart';
-import 'package:mydemo_tabnavi2/datas/course_play_model.dart';
+import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
+import 'package:mydemo_tabnavi2/datas/DataUtils.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/widgets/okProgressBar.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -24,8 +25,9 @@ class LessonCardWidget extends StatelessWidget {
   LessonData data;
 
   LessonCardWidget(this.desc) {
-    data = LessonPlayModel.singleton().getLessonData(desc.lessonId);
+    data = LessonDataManager.singleton().getLessonData(desc.lessonId);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +81,8 @@ class LessonCardWidget extends StatelessWidget {
                 right: 5,
                 child: SafeArea(
                   child: okSelectableIcon(
+                    iconDataOn: Icons.star,
+                      iconDataOff: Icons.star_border,
                       initSelected: data.favorited,
                       onChangeState: (bool sel) {
                         data.favorited = sel;
@@ -110,17 +114,17 @@ class LessonCardWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Color(0xffffffff),
         borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black,
-            blurRadius: 2.0, // has the effect of softening the shadow
-            spreadRadius: 0.0, // has the effect of extending the shadow
-            offset: Offset(
-              1.0, // horizontal, move right 10
-              2.0, // vertical, move down 10
-            ),
-          )
-        ],
+//        boxShadow: [
+//          BoxShadow(
+//            color: Colors.black,
+//            blurRadius: 2.0, // has the effect of softening the shadow
+//            spreadRadius: 0.0, // has the effect of extending the shadow
+//            offset: Offset(
+//              1.0, // horizontal, move right 10
+//              2.0, // vertical, move down 10
+//            ),
+//          )
+//        ],
       ),
       child: Padding(
         padding: const EdgeInsets.only(left: 5, right: 5),
@@ -137,7 +141,7 @@ class LessonCardWidget extends StatelessWidget {
                 top: 30,
                 left: 5,
                 child: Text(
-                  "중급코스",
+                  getLevelName(desc.level),
                   style: Styles.courseCardTitle2Text,
                   textAlign: TextAlign.center,
                 )),
@@ -153,7 +157,7 @@ class LessonCardWidget extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: Padding(
                   padding: EdgeInsets.only(bottom: 5),
-                  child: _progressBar() //_lookAroundButton()
+                  child: isPlayingLesson(desc) ?  _progressBar() : _lookAroundButton()
                   ),
             )
           ],
@@ -171,7 +175,7 @@ class LessonCardWidget extends StatelessWidget {
           color: Colors.greenAccent,
         ));
 
-    var icons = List<Widget>.generate(2, (index) {
+    var icons = List<Widget>.generate(desc.recommanded, (index) {
       return icon;
     });
 
@@ -201,20 +205,25 @@ class LessonCardWidget extends StatelessWidget {
 
   Widget _progressBar() {
     const barSize = 300.0;
-    const pointCount = 5;
+    const pointSize = 10.0;
 
     List<Widget> stage = List<Widget>();
-    List<int> progs = desc.getProgressStatus();
+    List<int> progs = getLessonProgress(desc) ;
 
-    double step = (barSize) / (progs[0]);
+   // double step = (barSize) / (progs[0]);
+    double step = (barSize - (pointSize *  progs[0])) / (progs[0]);
 
-    for (int i = 0; i < progs[0]; i++) {
-      if( i == (progs[0]-1))
-          step = 0;
+    for (int s = 0; s < progs[0]; s++) {
+     // if( i == (progs[0]-1))
+      //    step = 0;
+      VideoData videoData = LessonDataManager.singleton().getVideoData( desc.videoList[s]);
+      Color c = Colors.white;
+      if(videoData.completed) c = Colors.green;
+      else if(videoData.time > 0) c = Colors.greenAccent;
 
       Widget point = Padding(
           padding: EdgeInsets.only(left: 0, right: step),
-          child: Icon(Icons.brightness_1, size: 10, color: Colors.white));
+          child: Icon(Icons.brightness_1, size: pointSize, color: c));
       stage.add(point);
     }
 
@@ -225,8 +234,10 @@ class LessonCardWidget extends StatelessWidget {
         width: barSize,
         child: Stack(
           children: [
-            okProgressBar(width: barSize, height: 10, p: 0.75),
-            Row(children: stage),
+            okStageProgressBar(width: barSize, height: 10, totalStage: progs[0], progStage: progs[1], p: 1/3),
+//
+//            okProgressBar(width: barSize, height: 10, p: 2.0/3.0),
+//            Row(children: stage),
             Positioned(
               left: 0,
               bottom: 5,
@@ -246,7 +257,7 @@ class LessonCardSimpleWidget extends StatelessWidget {
   final LessonData data;
 
   LessonCardSimpleWidget(this.desc)
-      : data = LessonPlayModel.singleton().getLessonData(desc.lessonId) {}
+      : data = LessonDataManager.singleton().getLessonData(desc.lessonId) {}
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +313,7 @@ class LessonCardSimpleWidget extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: Padding(
                   padding: EdgeInsets.only(bottom: 5),
-                  child: _progressBar() //_lookAroundButton()
+                  child: isPlayingLesson(desc) ?  _progressBar() : _lookAroundButton()
                   ),
             )
           ],
@@ -353,13 +364,13 @@ class LessonCardSimpleWidget extends StatelessWidget {
     const pointCount = 5;
 
     List<Widget> stage = List<Widget>();
-    List<int> progs = desc.getProgressStatus();
+    List<int> progs =  getLessonProgress(desc);// desc.getProgressStatus();
 
-    double step = barSize / (progs[0]);
+    double step = (barSize - (10 *  progs[0])) / (progs[0]);
 
     for (int i = 0; i < progs[0]; i++) {
-      if( i == (progs[0]-1))
-        step = 0;
+     // if( i == (progs[0]-1))
+      // / step = 0;
 
       Widget point = Padding(
           padding: EdgeInsets.only(left: 0, right: step),
@@ -374,8 +385,9 @@ class LessonCardSimpleWidget extends StatelessWidget {
         width: barSize,
         child: Stack(
           children: [
-            okProgressBar(width: barSize, height: 10, p: 0.75),
-           Row(children: stage),
+          //  okProgressBar(width: barSize, height: 10, p: 0.75),
+            okStageProgressBar(width: barSize, height: 10, totalStage: progs[0], progStage: progs[1], p: 1/3),
+           //Row(children: stage),
             Positioned(
               left: 0,
               bottom: 5,

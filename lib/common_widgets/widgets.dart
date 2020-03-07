@@ -91,13 +91,15 @@ class okSelectableIcon extends StatefulWidget {
   final bool initSelected;
   final IconData iconDataOn;
   final IconData iconDataOff;
+  final Color iconColor;
 
   const okSelectableIcon(
       {this.iconDataOn,
       this.iconDataOff,
       this.initSelected,
       this.onChangeState,
-      this.iconSize = 30});
+      this.iconSize = 30,
+      this.iconColor = Colors.blue});
 
   @override
   okSelectableIconState createState() {
@@ -128,8 +130,9 @@ class okSelectableIconState extends State<okSelectableIcon> {
             width: widget.iconSize,
             height: widget.iconSize,
             child: Icon(
-                selected ? CupertinoIcons.heart_solid : CupertinoIcons.heart,
-                size: widget.iconSize)));
+                selected ? widget.iconDataOn : widget.iconDataOff,
+                size: widget.iconSize,
+            color : widget.iconColor)));
   }
 }
 

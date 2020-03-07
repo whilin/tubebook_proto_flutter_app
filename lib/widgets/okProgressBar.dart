@@ -45,3 +45,51 @@ class okProgressBarState extends State<okProgressBar> {
         ]));
   }
 }
+
+class okStageProgressBar extends StatelessWidget {
+  final int totalStage;
+  final int progStage;
+
+  final double width;
+  final double height;
+  final double p;
+
+  okStageProgressBar({this.width, this.height, this.totalStage, this.progStage, this.p});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return _progressBar();
+  }
+
+  Widget _progressBar() {
+   // const barSize = 300.0;
+    var pointSize = height;
+
+    List<Widget> stage = List<Widget>();
+   // List<int> progs = getLessonProgress(desc) ;
+
+    // double step = (barSize) / (progs[0]);
+    double step = (width - (pointSize *  totalStage)) / totalStage;
+
+    for (int s = 0; s < totalStage; s++) {
+
+      Color c = s < progStage ? Colors.greenAccent : Colors.white;
+
+      Widget point = Padding(
+          padding: EdgeInsets.only(left: 0, right: step),
+          child: Icon(Icons.brightness_1, size: pointSize, color: c));
+      stage.add(point);
+    }
+
+    return Container(
+        height: height,
+        width: width,
+        child: Stack(
+          children: [
+            okProgressBar(width: width, height: height, p: p),
+            Row(children: stage),
+          ],
+        ));
+  }
+}

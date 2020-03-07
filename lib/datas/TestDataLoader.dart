@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:mydemo_tabnavi2/datas/YoutubeDataManager.dart';
+import 'package:mydemo_tabnavi2/datas/YoutubeDataLoader.dart';
 import 'package:youtube_api/youtube_api.dart';
-import 'course_data_define.dart';
+import 'DataTypeDefine.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:youtube_api/_api.dart';
 
-class LocalDataLoader {
+class TestDataLoader {
 
   //..
   //.. 
@@ -18,10 +18,10 @@ class LocalDataLoader {
     TopicDesc desc;
 
     desc = TopicDesc()
-      ..topicId = 'flutter_topic'
+      ..topicId = 'topic_flutter'
       ..name = 'Flutter'
       ..section = 'CrossPlatformApp'
-      ..imageAssetPath = 'assets/title_java.png'
+      ..imageAssetPath = 'assets/logo_flutter.png'
       ..description = 'Google에서 만든 CrossPlatorm'
       ..tags = ['Widget', 'Async', 'Database', 'Networking'];
     _topiclist.add(desc);

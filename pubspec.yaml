@@ -31,10 +31,16 @@ dependencies:
   youtube_api: ^0.7.2
   sprintf: ^4.0.0
   flappy_search_bar: ^1.7.2
+  excel: ^1.0.2
+  enum_to_string: ^1.0.9
+  path_provider: ^1.6.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: ^1.8.0
+  json_serializable: ^3.2.5
+  json_annotation: ^3.0.0
 
 
 # For information on the generic Dart part of this file, see the
@@ -57,7 +63,12 @@ flutter:
     - assets/title_android.png
     - assets/title_java.png
     - assets/title_swift.jpg
+    - assets/logo_flutter.png
     - assets/banner.png
+
+    - assets/datasets/v1_lesson.json
+    - assets/datasets/v1_video.json
+    - assets/datasets/v1_topic.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

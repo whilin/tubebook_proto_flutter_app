@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_youtube_view/flutter_youtube_view.dart';
-import 'package:mydemo_tabnavi2/datas/course_data_define.dart';
-import 'package:mydemo_tabnavi2/datas/course_desc_model.dart';
-import 'package:mydemo_tabnavi2/datas/course_play_model.dart';
+import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:provider/provider.dart';
 import 'package:sprintf/sprintf.dart';
@@ -74,8 +74,8 @@ class VideoPlayerYState extends State<VideoPlayerY>
   void initState() {
     super.initState();
 
-    _videoData = LessonPlayModel.singleton().getVideoData(widget.videoId);
-    _videoDesc = LessonDescModel.singleton().getVideoDesc(widget.videoId);
+    _videoData = LessonDataManager.singleton().getVideoData(widget.videoId);
+    _videoDesc = LessonDescManager.singleton().getVideoDesc(widget.videoId);
 
     //Provider.of<PlayState>(context).playState;
   }
@@ -163,8 +163,8 @@ class VideoPlayerYState extends State<VideoPlayerY>
   void _loadOrCueVideo() {
     //if (_videoData != null) _videoData.playing = false;
 
-    _videoData = LessonPlayModel.singleton().getVideoData(widget.videoId);
-    _videoDesc = LessonDescModel.singleton().getVideoDesc(widget.videoId);
+    _videoData = LessonDataManager.singleton().getVideoData(widget.videoId);
+    _videoDesc = LessonDescManager.singleton().getVideoDesc(widget.videoId);
 
     Provider.of<PlayerStateNotifier>(context).readyVideo(widget.videoId);
 
@@ -195,7 +195,14 @@ class VideoPlayerYState extends State<VideoPlayerY>
             ));
 
     return Column(
-      children: <Widget>[player, controlBar()],
+      children: <Widget>[
+        Stack(
+          children: [ player,
+            SizedBox (
+            height: 270,
+            child : Icon(Icons.description, color : Colors.amber)
+            )
+         ]), controlBar()],
     );
   }
 

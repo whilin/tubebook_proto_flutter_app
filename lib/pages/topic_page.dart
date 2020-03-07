@@ -2,44 +2,44 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mydemo_tabnavi2/common_widgets/cardWidgets.dart';
-import 'package:mydemo_tabnavi2/datas/course_data_define.dart';
-import 'package:mydemo_tabnavi2/datas/course_desc_model.dart';
+import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
 import 'package:mydemo_tabnavi2/common_widgets/widgets.dart';
-import 'package:mydemo_tabnavi2/datas/course_play_model.dart';
+import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'lesson_card_widget.dart';
 import 'lesson_page.dart';
 
-class TopicDetailPage extends StatefulWidget {
+class TopicPage extends StatefulWidget {
   final TopicDesc desc;
   final TopicData data;
 
-  TopicDetailPage(this.desc)
-      : data = LessonPlayModel.singleton().getTopicData(desc.topicId) {}
+  TopicPage(this.desc)
+      : data = LessonDataManager.singleton().getTopicData(desc.topicId) {}
 
   @override
-  _TopicDetailPageState createState() => _TopicDetailPageState();
+  _TopicPageState createState() => _TopicPageState();
 }
 
-class _TopicDetailPageState extends State<TopicDetailPage> {
+class _TopicPageState extends State<TopicPage> {
   final Set<LessonLevel> _levelFilter = Set();
 
   final Set<String> _tagFilter = Set();
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
+    return Scaffold(
       backgroundColor: Color(0xff3C3C3C),
-      child: SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildHeader(context),
               _buildFilterChips(context),
-              Consumer<LessonPlayModel>(builder: (context, model, child) {
+              Consumer<LessonDataManager>(builder: (context, model, child) {
                 return _buildLessonList(context);
               })
             ]),
@@ -68,10 +68,12 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
             top: 0,
             left: 16,
             child: SafeArea(
-              child: okCircleButton(
-                  size: 30,
-                  bgColor: Colors.white,
-                  icon: Icons.close,
+              child: IconButton(
+                  //size: 30,
+                  //bgColor: Colors.white,
+                  iconSize: 37,
+                  padding: EdgeInsets.all(7),
+                  icon: Icon(Icons.arrow_back, color: Colors.white,),
                   onPressed: () {
                     Navigator.of(context).pop();
                   }),
@@ -84,6 +86,9 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
               child: okSelectableIcon(
                   initSelected: widget.data.favorited,
                   iconSize: 37,
+                  iconDataOn: Icons.favorite,
+                  iconDataOff: Icons.favorite_border,
+                  iconColor: Colors.greenAccent,
                   onChangeState: (bool sel) {
                     widget.data.favorited = sel;
                     // Navigator.of(context).pop();
@@ -161,8 +166,14 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
       });
     }).toList();
 
+    var lessonList = LessonDescManager.singleton().queryLessonListByTopic(widget.desc.topicId);
+    Set<String> tagSet = Set();
+    for(var lesson in lessonList) {
+      tagSet.addAll(lesson.tags);
+    }
+
     List<okSelectableLabel> tagChips =
-        widget.desc.tags.map<okSelectableLabel>((e) {
+      tagSet.map<okSelectableLabel>((e) {
       Widget c10 = okSelectableLabel(e, _tagFilter.contains(e), (on) {
         onTagFilter(e, on);
       });
@@ -216,9 +227,9 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
   }
 
   Widget _buildLessonList(BuildContext context) {
-    var lessionModel = LessonDescModel.singleton();
+    var lessionModel = LessonDescManager.singleton();
 
-    var lessonList = lessionModel.queryLessionListByTopic(widget.desc.topicId);
+    var lessonList = lessionModel.queryLessonListByTopic(widget.desc.topicId);
     List<Widget> cardList = [];
 
     for (var lession in lessonList) {
