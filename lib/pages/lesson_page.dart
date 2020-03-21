@@ -4,15 +4,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mydemo_tabnavi2/common_widgets/widgets.dart';
 import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
-import 'package:mydemo_tabnavi2/datas/DataUtils.dart';
+import 'package:mydemo_tabnavi2/datas/DataFuncs.dart';
 import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
 import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
-import 'package:mydemo_tabnavi2/pages/lesson_card_widget.dart';
+import 'package:mydemo_tabnavi2/libs/okUtils.dart';
+import 'package:mydemo_tabnavi2/widgets/lesson_card_widget.dart';
 import 'package:mydemo_tabnavi2/pages/video_player_widget.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
-import 'package:mydemo_tabnavi2/widgets/okProgressBar.dart';
+import 'package:mydemo_tabnavi2/common_widgets/okProgressBar.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -29,7 +31,8 @@ class LessonPage extends StatefulWidget {
   }
 }
 
-class LessonPageState extends State<LessonPage> {
+class LessonPageState extends State<LessonPage>
+    with VideoPlayerControllerInterface {
   List<VideoDesc> videoDescList = [];
   List<VideoData> videoDataList = [];
 
@@ -71,6 +74,36 @@ class LessonPageState extends State<LessonPage> {
     });
   }
 
+  @override
+  void onCloseWindowEvent() {
+    super.onCloseWindowEvent();
+    Navigator.of(context).pop();
+  }
+
+  void onSubscribe() {
+    LessonDataManager.singleton().requestSubscribeLesson(widget.desc.lessonId, (result, err) {
+      if(err !=null) {
+
+      } else {
+
+        String msg = '[${widget.desc.title}]를 시작합니다';
+        Fluttertoast.showToast(
+            msg: msg,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+            timeInSecForIos: 3,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+
+        setState(() {
+
+        });
+      }
+    });
+  }
+
   //전역으로 사용할 수 있는 플레이 상태 오브젝트
   PlayerStateNotifier playState = PlayerStateNotifier();
 
@@ -79,6 +112,7 @@ class LessonPageState extends State<LessonPage> {
     // TODO: implement build
     return Scaffold(
         backgroundColor: Styles.appBackground,
+        /*
         appBar: AppBar(
           backgroundColor: Styles.appBackground,
           leading:
@@ -108,12 +142,19 @@ class LessonPageState extends State<LessonPage> {
                 })
           ],
         ),
-        body: ChangeNotifierProvider<PlayerStateNotifier>.value(
-            value: playState,
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              VideoPlayerY(videoId: getActiveVideoKey()),
-              Expanded(child: _buildVideoList())
-            ])));
+         */
+        body: SafeArea(
+            top: true,
+            bottom: false,
+            child: ChangeNotifierProvider<PlayerStateNotifier>.value(
+                value: playState,
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  VideoPlayerV2(
+                    videoId: getActiveVideoKey(),
+                    controllerInterface: this,
+                  ),
+                  Expanded(child: _buildVideoList())
+                ]))));
   }
 
   Widget _buildVideoList() {
@@ -125,8 +166,13 @@ class LessonPageState extends State<LessonPage> {
           return Consumer<PlayerStateNotifier>(builder: (_, playState, __) {
             if (index == 0)
               return Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: LessonCardSimpleWidget(widget.desc),
+                padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
+                child: LessonCardDetailBarWidget.forLesson(
+                  desc: widget.desc,
+                  onBarClick: () {},
+                  onSubscribeClick: onSubscribe,
+                ),
+                //   child: LessonCardSimpleWidget(widget.desc),
               );
             else if (index <= itemCount)
               return _videoItem(videoDescList[index - 1]);
@@ -138,7 +184,7 @@ class LessonPageState extends State<LessonPage> {
 
   Widget _bottomDesc() {
     return Padding(
-        padding: EdgeInsets.only(top: 50, bottom: 10),
+        padding: EdgeInsets.only(top: 50, bottom: 20),
         child: Container(
           height: 100,
           color: Colors.black12,
@@ -155,10 +201,14 @@ class LessonPageState extends State<LessonPage> {
       alignment: Alignment.topLeft,
     );
 
+    var imageUrl = YoutubePlayer.getThumbnail(
+        videoId: desc.videoKey, quality: ThumbnailQuality.standard);
+
     VideoData data = LessonDataManager.singleton().getVideoData(desc.videoKey);
 
     // desc.snippet.
-    String timeText = desc.playTimeText; //'${desc.snippet.durationH}H ${desc.snippet.durationM}분 ${desc.snippet.durationS}초';
+    String timeText = desc
+        .playTimeText; //'${desc.snippet.durationH}H ${desc.snippet.durationM}분 ${desc.snippet.durationS}초';
     double p = getVideoProgress(desc);
 
     //double totalTime = desc.snippet.durationM * 60.0 + desc.snippet.durationS;
@@ -174,9 +224,11 @@ class LessonPageState extends State<LessonPage> {
     else
       playIcon = Icons.radio_button_unchecked;
 
+    final double height = 90.0;
+
     return Container(
-        margin: EdgeInsets.only(top: 8.0),
-        height: 74,
+        margin: EdgeInsets.only(top: 12.0),
+        height: height,
         //color: Colors.amber,
         child: GestureDetector(
           onTap: () {
@@ -186,40 +238,57 @@ class LessonPageState extends State<LessonPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+//              Padding(
+//                  padding: EdgeInsets.only(right: 0, left: 0),
+//                  child: Icon(playIcon, size: 38, color: Colors.white)),
               Padding(
-                  padding: EdgeInsets.only(right: 0, left: 0),
-                  child: Icon(playIcon, size: 38, color: Colors.white)),
-              Padding(
-                  padding: EdgeInsets.only(left: 0, right: 0),
-                  child: SizedBox(width: 98, height: 74, child: thumnail)),
+                  padding: EdgeInsets.only(left: 5, right: 0),
+                  child: Container(
+                      width: toSDWidth(height),
+                      height: height,
+                      child: Stack(children: [
+                        Container(
+                          // child : thumnail,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              image: DecorationImage(
+                                  image: NetworkImage(imageUrl),
+                                  fit: BoxFit.fitHeight,
+                                  colorFilter:
+                                      ColorFilter.srgbToLinearGamma())),
+                        ),
+                        Center(
+                            child:
+                                Icon(playIcon, size: 50, color: Colors.white))
+                      ]))),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 0),
                   child: Container(
-                    color: Colors.black45,
+                    //  color: Colors.black12,
                     child: Stack(
                         //crossAxisAlignment: CrossAxisAlignment.start,
                         // mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Positioned(
-                              left: 5,
-                              top: 5,
+                              left: 10,
+                              top: 15,
+                              right: 5,
                               child: Text(desc.snippet.title,
-                                  style: Styles.font15Text,
+                                  style: Styles.font13Text,
                                   overflow: TextOverflow.ellipsis)),
                           Positioned(
-                              left: 200,
-                              bottom: 6,
+                              left: 10,
+                              bottom: 25,
                               child: SizedBox(
-                                  width : 70,
-                                  child :
-                                  Text(timeText,
-                                  textAlign: TextAlign.right,
-                                  style: Styles.font10Text,
-                                  overflow: TextOverflow.ellipsis))),
+                                  width: 80,
+                                  child: Text(timeText,
+                                      textAlign: TextAlign.left,
+                                      style: Styles.font10Text,
+                                      overflow: TextOverflow.ellipsis))),
                           Positioned(
-                            left: 5,
-                            bottom: 9,
+                            left: 10,
+                            bottom: 15,
                             child: okProgressBar(width: 190, height: 8, p: p),
                           )
                         ]),

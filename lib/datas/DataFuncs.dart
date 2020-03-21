@@ -30,8 +30,11 @@ double getVideoProgress(VideoDesc desc) {
 }
 
 bool isPlayingLesson(LessonDesc desc) {
-  List<int> progs =  getLessonProgress(desc);
-  return progs[1] > 0;
+//  List<int> progs =  getLessonProgress(desc);
+//  return progs[1] > 0;
+
+  var data = LessonDataManager.singleton().getLessonData(desc.lessonId);
+  return data.subscribed !=null && data.subscribed ;
 }
 
 String getLevelName(LessonLevel level) {

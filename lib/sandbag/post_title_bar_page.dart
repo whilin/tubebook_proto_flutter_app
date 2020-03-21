@@ -8,9 +8,14 @@ class PostTitleBarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey,
-      body: Stack(
+      body:
+      Column (
+        children : [
+      Stack(
         children: <Widget>[_buildImage(context), _buildTopHeader()],
       ),
+        _buildAnimation()
+        ])
     );
   }
 
@@ -49,6 +54,10 @@ class PostTitleBarPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildAnimation() {
+    return AniBoxWidget();
+  }
 }
 
 class DialogonalClipper extends CustomClipper<Path> {
@@ -65,4 +74,55 @@ class DialogonalClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => true;
+}
+
+class AniBoxWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return AniBoxWidgetState();
+  }
+
+}
+
+class AniBoxWidgetState extends State<AniBoxWidget> with SingleTickerProviderStateMixin {
+
+  Animation<double> animation;
+  AnimationController controller;
+
+  void initState() {
+    super.initState();
+    controller = AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    animation = Tween<double>(begin : 0, end : 200).animate(controller)
+      ..addListener(() {
+        setState(() {
+
+        });
+      });
+
+    controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(AniBoxWidget oldWidget) {
+    controller.reset();
+    controller.forward();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //print("Ani >" + animation.value.toString());
+    // TODO: implement build
+    return  Container(
+      height: animation.value,
+      color: Colors.amber,
+    );
+  }
+
 }

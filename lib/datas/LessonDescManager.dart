@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:mydemo_tabnavi2/datas/TestDataLoader.dart';
 
@@ -31,6 +33,10 @@ class LessonDescManager with ChangeNotifier {
     return _topiclist;
   }
 
+  List<LessonDesc> queryHotTrends() {
+    return _lessonList.getRange(0, min(4, _lessonList.length)).toList();
+  }
+
   List<TopicDesc> getTopicListBySection(String section) {
     return _topiclist.where((e) => e.section == section).toList();
   }
@@ -55,7 +61,18 @@ class LessonDescManager with ChangeNotifier {
     return l;
   }
 
-  Future initializeMetaData_() async {
+  LessonDesc getLessonDesc(String lessonId) {
+   return  _lessonList.firstWhere((e) => e.lessonId == lessonId, orElse: ()=> null);
+  }
+
+
+  TopicDesc getTopic(String topicId) {
+    return _topiclist.firstWhere((e) => e.topicId == topicId);
+  }
+
+
+  /*
+  Future initializeMetaData() async {
     _topiclist.addAll(TestDataLoader.loadTopicList());
 
     _lessonList.addAll(TestDataLoader.loadLessonList());
@@ -66,6 +83,7 @@ class LessonDescManager with ChangeNotifier {
 
     notifyListeners();
   }
+   */
 
   Future initializeMetaData2() async {
     await Future.delayed(Duration(milliseconds: 0));
@@ -76,6 +94,8 @@ class LessonDescManager with ChangeNotifier {
     _topiclist.addAll(loader.topicList);
     _lessonList.addAll(loader.lessonList);
     _videoList.addAll(loader.videoList);
+
+    notifyListeners();
 
     await YoutubeDataLoader.singleton().loadVideoDetailInfo(_videoList);
 

@@ -6,6 +6,7 @@ import 'package:mydemo_tabnavi2/pages/home_page.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:provider/provider.dart';
 import 'datas/LessonDescManager.dart';
+import 'pages/myclass_page.dart';
 import 'sandbag/post_title_bar_page.dart';
 import 'pages/search_page.dart';
 import 'sandbag/sliver_app_bar_page.dart';
@@ -79,6 +80,7 @@ class MyMaterialApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         backgroundColor: Colors.yellow
@@ -154,7 +156,7 @@ class _MyMaterialAppHomeState extends State<MyMaterialAppHome>
               title: new Text('Search'),
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.star),
+                icon: Icon(Icons.book),
                 title: Text('My Class')),
             BottomNavigationBarItem(
                 icon: Icon(Icons.menu),
@@ -170,7 +172,7 @@ class _MyMaterialAppHomeState extends State<MyMaterialAppHome>
             children:  [
               HomePage(),
               SearchPage(),
-              SliverAppBarPage(),
+              MyClassPage(),
               PostTitleBarPage(),
             ])
     );

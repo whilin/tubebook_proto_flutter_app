@@ -43,5 +43,15 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>프로필 사진을 등록하기 위해 포토앨범에 접권할 수 는 권한이 필요합니다</string>
+
+	<key>NSCameraUsageDescription</key>
+    <string>프로필 사진을 등록하기 위해 카메라에 접권할 수 있는 권한이 필요합니다</string>
+
+    <key>NSMicrophoneUsageDescription</key>
+    <string>동영상 업로드를 위해 마이크에 접권할 수 있는 권한이 필요합니다</string>
+
 </dict>
 </plist>

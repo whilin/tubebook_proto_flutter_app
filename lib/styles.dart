@@ -11,13 +11,21 @@ abstract class Styles {
   static const courseCardTitleText = TextStyle(
     color: Color(0xff11353B),
     fontFamily: 'NotoSans',
-    fontSize: 18,
+    fontSize: 16,
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.bold,
   );
 
 
   static const courseCardTitle2Text = TextStyle(
+    color: Color(0xff11353B),
+    fontFamily: 'NotoSans',
+    fontSize: 12,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
+
+  static const courseCardTitle3Text = TextStyle(
     color: Color(0xff11353B),
     fontFamily: 'NotoSans',
     fontSize: 14,
@@ -31,7 +39,7 @@ abstract class Styles {
     fontFamily: 'NotoSans',
     fontSize: 10,
     fontStyle: FontStyle.normal,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.w600,
   );
 
   static const font10GrayText = TextStyle(
@@ -44,11 +52,27 @@ abstract class Styles {
 
 
   static const font20Text = TextStyle(
-    color: Color.fromRGBO(0, 80, 0, 0.7),
+    color:Colors.white,// Color.fromRGBO(0, 80, 0, 0.7),
     fontFamily: 'NotoSans',
     fontSize: 20,
     fontStyle: FontStyle.normal,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const font30Text = TextStyle(
+    color:Colors.white,// Color.fromRGBO(0, 80, 0, 0.7),
+    fontFamily: 'NotoSans',
+    fontSize: 30,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const font18Text = TextStyle(
+    color: Colors.white,
+    fontFamily: 'NotoSans',
+    fontSize: 18,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.w700,
   );
 
   static const font15Text = TextStyle(
@@ -59,6 +83,30 @@ abstract class Styles {
     fontWeight: FontWeight.normal,
   );
 
+  static const font13Text = TextStyle(
+    color: Colors.white,
+    fontFamily: 'NotoSans',
+    fontSize: 13,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const font12Text = TextStyle(
+    color: Colors.white,
+    fontFamily: 'NotoSans',
+    fontSize: 12,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.w200,
+  );
+
+
+  static const sectionTitle = TextStyle(
+    color: Colors.white60,
+    fontFamily: 'NotoSans',
+    fontSize: 15,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.w700,
+  );
 
 
   static const headlineText = TextStyle(
@@ -79,7 +127,7 @@ abstract class Styles {
   );
 
   static const headlineName = TextStyle(
-    color: Color.fromRGBO(0, 0, 0, 0.9),
+    color: Color.fromRGBO(255, 255, 255, 0.9),
     fontFamily: 'NotoSans',
     fontSize: 24,
     fontStyle: FontStyle.normal,
@@ -96,7 +144,7 @@ abstract class Styles {
 
   static const cardTitleText = TextStyle(
     color: Colors.blue,
-    fontFamily: 'NotoSans',
+    fontFamily: 'NotoSansKR',
     fontSize: 32,
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.bold,

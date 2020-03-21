@@ -5,6 +5,7 @@ import 'package:mydemo_tabnavi2/libs/okLocalDatabase.dart';
 
 import 'DataTypeDefine.dart';
 
+typedef RequestCallback = void Function(dynamic result, String err);
 
 class LessonDataManager with ChangeNotifier {
 
@@ -65,6 +66,23 @@ class LessonDataManager with ChangeNotifier {
     }
   }
 
+  List<LessonData> querySubscribedLessonList() {
+
+   // var list =  _lessonDataList.where((element) => element.subscribed !=null && element.subscribed ).toList(growable: false);
+
+    var list =  _lessonDataList.where((element) => element.subscribed !=null && element.subscribed ).toList(growable: false);
+
+    return list;
+
+  }
+
+  void requestSubscribeLesson(String lessonId, RequestCallback callback) {
+    var data = getLessonData(lessonId);
+    data.subscribed  = true;
+
+    callback(data, null);
+  }
+
   Future<bool> initLocalPlayDb() async {
     var db = await okLocalDatabase.singleton();
 
@@ -79,6 +97,12 @@ class LessonDataManager with ChangeNotifier {
     _topicDataList.addAll(topicList.map((e)=> TopicData.fromJson(e)).toList());
     _lessonDataList.addAll(lessonList.map((e)=> LessonData.fromJson(e)).toList());
     _videoDataList.addAll(videoList.map((e)=> VideoData.fromJson(e)).toList());
+
+    _lessonDataList.forEach((element) {
+      element.subscribed = element.subscribed ?? false;
+      element.favorited = element.favorited ?? false;
+    });
+
   }
 
   Future<bool> commitLocalPlayDb() async {

@@ -9,8 +9,8 @@ import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'lesson_card_widget.dart';
-import 'lesson_page.dart';
+import '../widgets/lesson_card_widget.dart';
+import '../pages/lesson_page.dart';
 
 class TopicPage extends StatefulWidget {
   final TopicDesc desc;
