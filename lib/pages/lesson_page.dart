@@ -40,6 +40,11 @@ class LessonPageState extends State<LessonPage>
   VideoData activeData = null;
   VideoDesc activeDesc = null;
 
+  bool _fullScreenMode = false;
+
+  //전역으로 사용할 수 있는 플레이 상태 오브젝트
+  PlayerStateNotifier playState = PlayerStateNotifier();
+
   LessonPageState() {}
 
   @override
@@ -80,12 +85,19 @@ class LessonPageState extends State<LessonPage>
     Navigator.of(context).pop();
   }
 
+  @override
+  void onFullscreenEvent(bool on) {
+    _fullScreenMode = on;
+    setState(() {
+
+    });
+  }
+
   void onSubscribe() {
-    LessonDataManager.singleton().requestSubscribeLesson(widget.desc.lessonId, (result, err) {
-      if(err !=null) {
-
+    LessonDataManager.singleton().requestSubscribeLesson(widget.desc.lessonId,
+        (result, err) {
+      if (err != null) {
       } else {
-
         String msg = '[${widget.desc.title}]를 시작합니다';
         Fluttertoast.showToast(
             msg: msg,
@@ -94,24 +106,18 @@ class LessonPageState extends State<LessonPage>
             timeInSecForIos: 3,
             backgroundColor: Colors.red,
             textColor: Colors.white,
-            fontSize: 16.0
-        );
+            fontSize: 16.0);
 
-        setState(() {
-
-        });
+        setState(() {});
       }
     });
   }
-
-  //전역으로 사용할 수 있는 플레이 상태 오브젝트
-  PlayerStateNotifier playState = PlayerStateNotifier();
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        backgroundColor: Styles.appBackground,
+        backgroundColor: _fullScreenMode ?  Colors.black : Styles.appBackground,
         /*
         appBar: AppBar(
           backgroundColor: Styles.appBackground,
@@ -161,12 +167,13 @@ class LessonPageState extends State<LessonPage>
     int itemCount = videoDescList.length;
 
     return ListView.builder(
-        itemCount: itemCount + 2,
+        itemCount: itemCount + 3,
         itemBuilder: (context, index) {
           return Consumer<PlayerStateNotifier>(builder: (_, playState, __) {
-            if (index == 0)
+            if (index == 1)
               return Padding(
-                padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
+                padding: const EdgeInsets.only(
+                    top: 5, bottom: 10, left: 20, right: 20),
                 child: LessonCardDetailBarWidget.forLesson(
                   desc: widget.desc,
                   onBarClick: () {},
@@ -174,21 +181,35 @@ class LessonPageState extends State<LessonPage>
                 ),
                 //   child: LessonCardSimpleWidget(widget.desc),
               );
-            else if (index <= itemCount)
-              return _videoItem(videoDescList[index - 1]);
+            else if (index == 0)
+              return _lessonDesc();
+            else if ((index - 2) < itemCount)
+              return _videoItem(videoDescList[index - 2]);
             else
-              return _bottomDesc();
+              return Container(
+                height: 50,
+              );
           });
         });
   }
 
-  Widget _bottomDesc() {
-    return Padding(
-        padding: EdgeInsets.only(top: 50, bottom: 20),
-        child: Container(
-          height: 100,
-          color: Colors.black12,
-        ));
+  Widget _lessonDesc() {
+    return new Column(children: [
+      Padding(
+          padding: EdgeInsets.only(top: 5, bottom: 10),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            //height: 100,
+            //color: Colors.black12,
+            child: Text(
+              '이 레슨을 플러터를 처음 배우는 분들을 위해 준비한 강좌입니다.\n이 레슨을 플러터를 처음 배우는 분들을 위해 준비한 강좌입니다',
+              style: new TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          )),
+//    Padding(
+//    padding: EdgeInsets.symmetric(horizontal: 10),
+//    child : Divider(color: Colors.black12, height: 1,thickness: 2))
+    ]);
   }
 
   Widget _videoItem(VideoDesc desc) {

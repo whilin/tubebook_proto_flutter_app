@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +10,9 @@ import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/libs/okUtils.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:provider/provider.dart';
+import 'package:seekbar/seekbar.dart';
 import 'package:sprintf/sprintf.dart';
+import 'package:async/async.dart';
 
 class PlayerStateNotifier with ChangeNotifier {
   PlayerStateNotifier();
@@ -42,6 +46,7 @@ class PlayerStateNotifier with ChangeNotifier {
 
 class VideoPlayerControllerInterface {
   void onCloseWindowEvent() {}
+
   void onFullscreenEvent(bool on) {}
 }
 
@@ -90,10 +95,10 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
     _videoData = LessonDataManager.singleton().getVideoData(widget.videoId);
     _videoDesc = LessonDescManager.singleton().getVideoDesc(widget.videoId);
 
-    waitForScreen();
+    waitForScreenReady();
   }
 
-  Future waitForScreen() async {
+  Future waitForScreenReady() async {
     _screenReady = false;
 
     await Future.delayed(new Duration(milliseconds: 300));
@@ -126,7 +131,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
 
   @override
   void onCurrentSecond(double second) {
-    print("onCurrentSecond second = $second");
+    //print("onCurrentSecond second = $second");
     _currentVideoSecond = second;
 
     _videoData.time = second;
@@ -163,7 +168,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
   @override
   void onVideoDuration(double duration) {
     _duration = duration;
-    print("onVideoDuration duration = $duration");
+    //print("onVideoDuration duration = $duration");
   }
 
   void _onYoutubeCreated(FlutterYoutubeViewController controller) {
@@ -194,8 +199,8 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
         DeviceOrientation.portraitDown,
       ]);
     }
-
-    waitForScreen();
+    widget.controllerInterface.onFullscreenEvent(_fullScreenMode);
+    waitForScreenReady();
 //
 //    setState(() {
 //     // _fullScreenMode = !_fullScreenMode;
@@ -217,15 +222,102 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
     // _videoData.playing = true;
 
     _controller.loadOrCueVideo(widget.videoId, _videoData.time);
+    _showScreenOverlay();
   }
 
-  void jumpPlaytime(int seconds) {
+  void forwardPlaytime(int seconds) {
     setState(() {
       _currentVideoSecond += seconds;
       _currentVideoSecond = _currentVideoSecond.clamp(0, _duration);
       _controller.seekTo(_currentVideoSecond);
     });
+
+    _showScreenOverlay();
   }
+
+  void jumpPlaytime(double p) {
+    double totalTime = _videoDesc.totalPlayTime;
+    _controller.seekTo(totalTime * p);
+
+    _showScreenOverlay();
+  }
+
+  void playOrPause() {
+    var playState = Provider.of<PlayerStateNotifier>(context).playingState;
+    if (playState == PlayingState.Playing)
+      _controller.pause();
+    else
+      _controller.play();
+
+    _showScreenOverlay();
+  }
+
+  Timer _autoHideTimer = null;
+
+  void _showScreenOverlay() {
+
+    if( !_screenOverlayControl ){
+      setState(() {
+        _screenOverlayControl = true;
+      });
+    }
+
+    if (_autoHideTimer != null)
+      _autoHideTimer.cancel();
+
+    print('autoHideScreenOverlay_ schedule');
+
+    _autoHideTimer = Timer(Duration(seconds: 10),() {
+      print('autoHideScreenOverlay_ done');
+      _autoHideTimer = null;
+      setState(() {
+        _screenOverlayControl = false;
+      });
+    });
+  }
+
+  /*
+  CancelableOperation _cancelableOperation;
+
+
+  void autoHideScreenOverlay() {
+
+    if (_cancelableOperation != null)
+      _cancelableOperation.cancel();
+
+    print('autoHideScreenOverlay_ schedule');
+
+    final call = Future.delayed(Duration(seconds: 10),() {
+      print('autoHideScreenOverlay_ done');
+      _cancelableOperation = null;
+      setState(() {
+        _screenOverlayControl = false;
+      });
+    });
+
+    // waitingAsyncCall.
+    _cancelableOperation = CancelableOperation.fromFuture(call, onCancel: () {
+      print("autoHideScreenOverlay_ cancel");
+    });
+  }
+*/
+
+  /*
+  CancelableOperation op =null;
+  void autoHideScreenOverlay() {
+
+    if(op!=null)
+      op.cancel();
+
+      op = CancelableOperation.fromFuture( Future.delayed(Duration(seconds: 10), () {
+      print('Future.delayed then');
+      if (!op.isCanceled)
+        setState(() {
+          _screenOverlayControl = false;
+        });
+    }));
+  }
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -251,7 +343,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
     Widget player = Container(
         width: width,
         height: height,
-        color: Colors.black45,
+        color: Colors.black,
         alignment: Alignment.center,
         child: _screenReady == false
             ? null
@@ -283,19 +375,27 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
         setState(() {
           print(details.toString());
           _screenOverlayControl = !_screenOverlayControl;
+
+          if (_screenOverlayControl)
+            _showScreenOverlay();
         });
       },
     );
 
+    return Column(children: <Widget>[
+      Stack(
+        children: [gesture, _screenOverController(width, height)],
+      )
+    ]);
+
+    /*
     if (_fullScreenMode) {
       return Column(children: <Widget>[
         Stack(
           children: [
             gesture,
-            _screenOverlayControl
-                ? screenOverController(width, height)
-                : Container(height: height, width: width),
-            Positioned(bottom: 0, left: 0, right: 0, child: controlBar(true))
+            _screenOverController(width, height)
+
           ],
         )
       ]);
@@ -304,15 +404,13 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
         children: <Widget>[
           Stack(children: [
             gesture,
-            //  screenOverController(width, height),
-            _screenOverlayControl
-                ? screenOverController(width, height)
-                : Container(height: height, width: width),
+            _screenOverController(width, height)
           ]),
-          controlBar(false)
+          //controlBar(false)
         ],
       );
     }
+     */
   }
 
   static String timeFormat(double time) {
@@ -322,10 +420,22 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
     return sprintf('%02i:%02i', [min, sec]);
   }
 
-  Widget screenOverController(double width, double height) {
-    return SizedBox(
+  Widget _screenOverController(double width, double height) {
+    return _screenOverlayControl
+        ? _screenOverControllerShow(width, height)
+        : Container(height: height, width: width);
+  }
+
+  Widget _screenOverControllerShow(double width, double height) {
+
+    var playState = Provider.of<PlayerStateNotifier>(context).playingState;
+
+    IconData playIconData = (playState == PlayingState.Playing) ? Icons.pause : Icons.play_arrow;
+
+    return Container(
         height: height,
         width: width,
+        color: Colors.black38,
         child: Stack(children: [
           Positioned(
             top: 0,
@@ -333,7 +443,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
             child: IconButton(
               icon: Icon(
                 Icons.arrow_downward,
-                color: Colors.amber,
+                color: Colors.white,
               ),
               iconSize: 30,
               onPressed: widget.controllerInterface.onCloseWindowEvent,
@@ -348,41 +458,88 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.fast_rewind,
-                          size: 50, color: Colors.amber),
+                          size: 30, color: Colors.white),
                       onPressed: () {
-                        jumpPlaytime(-10);
+                        forwardPlaytime(-10);
                       },
                     ),
                     Spacer(),
                     IconButton(
-                      icon: Icon(Icons.play_circle_filled,
-                          size: 50, color: Colors.amber),
+                      icon: Icon(playIconData,
+                          size: 30, color: Colors.white),
                       onPressed: playOrPause,
                     ),
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.fast_forward,
-                          size: 50, color: Colors.amber),
+                          size: 30, color: Colors.white),
                       onPressed: () {
-                        jumpPlaytime(10);
+                        forwardPlaytime(10);
                       },
                     ),
                     Spacer(),
-                  ]))
+                  ])),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: screenOverController_bottom())
         ]));
   }
 
-  void playOrPause(){
-    var playState =
-        Provider.of<PlayerStateNotifier>(context).playingState;
-    if (playState == PlayingState.Playing)
-      _controller.pause();
-    else
-      _controller.play();
+  Widget screenOverController_bottom() {
+    double playTime = _videoData.time;
+    double totalTime = _videoDesc.totalPlayTime;
+    String timeText = timeFormat(playTime) + ' / ' + timeFormat(totalTime);
+
+    IconData iconData = Icons.play_arrow;
+    var playState = Provider.of<PlayerStateNotifier>(context).playingState;
+
+    return Container(
+        height: 50,
+        alignment: Alignment.center,
+        child: Stack(
+          children: [
+            Positioned(
+                left: 20,
+                bottom: 8,
+                child: Text(timeText, style: Styles.font10Text)),
+            Positioned(
+              left: 10,
+              bottom: 22,
+              right: 80,
+              child: SeekBar(
+                  value: playTime / totalTime,
+                  progressColor: Colors.red,
+                  onProgressChanged: (value) {
+                    jumpPlaytime(value);
+                  }),
+            ),
+            Positioned(
+                right: 30,
+                bottom: 5,
+                child: IconButton(
+                    iconSize: 25,
+                    icon: Icon(
+                      _volumeOn ? Icons.volume_up : Icons.volume_off,
+                      color: Colors.white,
+                    ),
+                    onPressed: updateVolumeOn)),
+            Positioned(
+                right: 0,
+                bottom: 5,
+                child: IconButton(
+                    iconSize: 25,
+                    icon: Icon(
+                      Icons.fullscreen,
+                      color: Colors.white,
+                    ),
+                    onPressed: updateFullScreenMode)),
+          ],
+        ));
   }
 
+  //Note. 독립된 바텀 컨트롤러
   Widget controlBar(bool fullScreenMode) {
-    double playTime = _videoData.time;
+    double playTime = _currentVideoSecond;// _videoData.time;
     double totalTime = _videoDesc.totalPlayTime;
     String timeText = timeFormat(playTime) + ' / ' + timeFormat(totalTime);
 
@@ -409,7 +566,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
                 ),
                 onPressed: () {
                   // _controller.setPlaybackRate(Pl)
-                  jumpPlaytime(-10);
+                  forwardPlaytime(-10);
                 }),
             IconButton(
                 icon: Icon(
@@ -432,7 +589,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  jumpPlaytime(10);
+                  forwardPlaytime(10);
                 }),
             Text(timeText, style: Styles.font15Text)
           ],
@@ -461,3 +618,86 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
     );
   }
 }
+
+/*
+class _ScreenControllerInterface {
+  void onCloseWindowEvent() {}
+  void onFullscreenEvent(bool on) {}
+
+  void seekPlaytime(int secTime) {}
+  void playOrPause() {}
+}
+
+class _ScreenOverlayController extends StatefulWidget {
+
+  final _ScreenControllerInterface controller;
+
+  _ScreenOverlayController(this.controller) {
+
+  }
+
+  @override
+  __ScreenOverlayControllerState createState() => __ScreenOverlayControllerState();
+}
+
+class __ScreenOverlayControllerState extends State<_ScreenOverlayController> {
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
+    // TODO: implement build
+    return screenOverController(size.width, size.height);
+  }
+
+  Widget screenOverController(double width, double height) {
+
+    return SizedBox(
+        height: height,
+        width: width,
+        child: Stack(children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: IconButton(
+              icon: Icon(
+                Icons.arrow_downward,
+                color: Colors.amber,
+              ),
+              iconSize: 30,
+              onPressed: widget.controller.onCloseWindowEvent,
+            ),
+          ),
+          Align(
+              alignment: Alignment.center,
+              child: Row(
+                //crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.fast_rewind,
+                          size: 50, color: Colors.amber),
+                      onPressed: () {
+                        widget.controller.seekPlaytime(-10);
+                      },
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.play_circle_filled,
+                          size: 50, color: Colors.amber),
+                      onPressed: widget.controller.playOrPause,
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.fast_forward,
+                          size: 50, color: Colors.amber),
+                      onPressed: () {
+                        widget.controller.seekPlaytime(10);
+                      },
+                    ),
+                    Spacer(),
+                  ]))
+        ]));
+  }
+}
+ */
