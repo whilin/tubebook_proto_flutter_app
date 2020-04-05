@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../styles.dart';
+
 class okProgressBar extends StatefulWidget {
   final double width;
   final double height;
@@ -12,7 +14,6 @@ class okProgressBar extends StatefulWidget {
 
   @override
   State<okProgressBar> createState() {
-    // TODO: implement createState
     return okProgressBarState();
   }
 }
@@ -20,31 +21,31 @@ class okProgressBar extends StatefulWidget {
 class okProgressBarState extends State<okProgressBar> {
   @override
   Widget build(BuildContext context) {
-
     var percent = min(widget.p, 1);
 
     return Container(
-
         child: Stack(children: [
-          Container(
-            width: widget.width,
-            height: widget.height,
-            decoration: BoxDecoration(
+      Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.height * 0.5),
+          color: Colors.white,
+        ),
+      ),
+      Container(
+          width: (widget.width * percent),
+          height: widget.height,
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(widget.height * 0.5),
-              color: Colors.black26,
-            ),
-          ),
-          Container(
-              width: (widget.width * percent),
-              height: widget.height,
-              alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(widget.height * 0.5),
-                color: Colors.yellow,
-              ))
-        ]));
+              //color: Styles.progBar0,
+              gradient:
+                  LinearGradient(colors: [Styles.progBar1, Styles.progBar0])))
+    ]));
   }
 }
+
 
 class okStageProgressBar extends StatelessWidget {
   final int totalStage;
@@ -54,41 +55,42 @@ class okStageProgressBar extends StatelessWidget {
   final double height;
   final double p;
 
-  okStageProgressBar({this.width, this.height, this.totalStage, this.progStage, this.p});
+  okStageProgressBar(
+      {this.width, this.height, this.totalStage, this.progStage, this.p});
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return _progressBar();
+    return _progressBar(context);
   }
 
-  Widget _progressBar() {
-   // const barSize = 300.0;
+  Widget _progressBar(BuildContext context) {
+
     var pointSize = height;
+    var dotWidth = width;
 
     List<Widget> stage = List<Widget>();
-   // List<int> progs = getLessonProgress(desc) ;
-
-    // double step = (barSize) / (progs[0]);
-    double step = (width - (pointSize *  totalStage)) / totalStage;
+    double pad = (dotWidth - (pointSize * (totalStage))) / totalStage;
 
     for (int s = 0; s < totalStage; s++) {
 
-      Color c = s < progStage ? Colors.greenAccent : Colors.white;
+      Color c = s < progStage ? Colors.greenAccent : Colors.black38;
+    //  double pad2 = (s == (totalStage - 1)) ? 0 : pad;
 
       Widget point = Padding(
-          padding: EdgeInsets.only(left: 0, right: step),
+          padding: EdgeInsets.only(left: 0, right: pad),
           child: Icon(Icons.brightness_1, size: pointSize, color: c));
+
       stage.add(point);
     }
 
-    return Container(
+    return SizedBox(
         height: height,
         width: width,
         child: Stack(
           children: [
             okProgressBar(width: width, height: height, p: p),
-            Row(children: stage),
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: stage),
           ],
         ));
   }

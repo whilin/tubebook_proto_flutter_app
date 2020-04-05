@@ -5,18 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:mydemo_tabnavi2/common_widgets/widgets.dart';
+import 'package:mydemo_tabnavi2/pages/DialogUtils.dart';
+import 'package:mydemo_tabnavi2/widgets/LessonWidget.dart';
+import 'package:mydemo_tabnavi2/pages/VideoItemWidget.dart';
+import 'package:mydemo_tabnavi2/widgets/widgets.dart';
 import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
 import 'package:mydemo_tabnavi2/datas/DataFuncs.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDescManager.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/libs/okUtils.dart';
-import 'package:mydemo_tabnavi2/widgets/lesson_card_widget.dart';
-import 'package:mydemo_tabnavi2/pages/video_player_widget.dart';
+import 'package:mydemo_tabnavi2/pages/LessonCardWidget.dart';
+import 'package:mydemo_tabnavi2/pages/VideoPlayerV2.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
-import 'package:mydemo_tabnavi2/common_widgets/okProgressBar.dart';
+import 'package:mydemo_tabnavi2/widgets/okProgressBar.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import 'LessonProgressBarWidget.dart';
+import 'VideoCompletedDailog.dart';
 
 class LessonPage extends StatefulWidget {
   final LessonDesc desc;
@@ -32,7 +38,7 @@ class LessonPage extends StatefulWidget {
 }
 
 class LessonPageState extends State<LessonPage>
-    with VideoPlayerControllerInterface {
+    with VideoPlayerControllerInterface, TickerProviderStateMixin {
   List<VideoDesc> videoDescList = [];
   List<VideoData> videoDataList = [];
 
@@ -44,6 +50,8 @@ class LessonPageState extends State<LessonPage>
 
   //전역으로 사용할 수 있는 플레이 상태 오브젝트
   PlayerStateNotifier playState = PlayerStateNotifier();
+  TabController _controller;
+  int _selectedPage = 0;
 
   LessonPageState() {}
 
@@ -59,6 +67,15 @@ class LessonPageState extends State<LessonPage>
     }
 
     activeIndex = videoDescList.length > 0 ? 0 : -1;
+
+    _controller =
+        new TabController(length: 2, initialIndex: _selectedPage, vsync: this);
+
+    _controller.addListener(() {
+      _selectedPage = _controller.index;
+      // setState(() {});
+      playState.notifyListeners();
+    });
   }
 
   String getActiveVideoKey() {
@@ -88,103 +105,216 @@ class LessonPageState extends State<LessonPage>
   @override
   void onFullscreenEvent(bool on) {
     _fullScreenMode = on;
-    setState(() {
+    setState(() {});
+  }
 
-    });
+  @override
+  void onVideoCompleted() {
+    confirmVideoCompleted();
   }
 
   void onSubscribe() {
+    // VideoCompletedDialog.showDialogImpl(context, activeDesc);
+
     LessonDataManager.singleton().requestSubscribeLesson(widget.desc.lessonId,
         (result, err) {
       if (err != null) {
       } else {
-        String msg = '[${widget.desc.title}]를 시작합니다';
-        Fluttertoast.showToast(
-            msg: msg,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.TOP,
-            timeInSecForIos: 3,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
-
+        String msg = '[${widget.desc.title}] 시작합니다';
+        DialogUtil.showToast(msg);
         setState(() {});
       }
     });
+  }
+
+  void confirmVideoCompleted() async {
+
+    if (widget.data.subscribed && !activeData.completed) {
+      bool response =
+          await VideoCompletedDialog.showDialogImpl(context, activeDesc);
+      if (response) {
+        activeData.completed = true;
+      }
+      setState(() {});
+
+      if (!widget.data.completed) {
+        LessonDataManager.singleton()
+            .requestLessonCompleted(widget.desc.lessonId, (data, err) {
+          if (widget.data.completed) {
+
+            print('Lesson Completed');
+          }
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        backgroundColor: _fullScreenMode ?  Colors.black : Styles.appBackground,
-        /*
-        appBar: AppBar(
-          backgroundColor: Styles.appBackground,
-          leading:
-              Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            IconButton(
-                icon: Icon(Icons.close),
-                onPressed : () {
-                  Navigator.of(context).pop();
-                }),
-            Padding(
-                padding: EdgeInsets.only(top: 5),
-                child: Text(
-                  "",///widget.desc.title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white),
-                ))
-          ]),
-          title: Text(widget.desc.title, style: Styles.font15Text, textAlign: TextAlign.center,),
-          actions: [
-            okSelectableIcon(
-              iconDataOn: Icons.favorite,
-                iconDataOff: Icons.favorite_border,
-                initSelected: widget.data.favorited,
-                onChangeState: (bool sel) {
-                  widget.data.favorited = sel;
-                  LessonDataManager.singleton().notifyListeners();
-                })
-          ],
-        ),
-         */
+        backgroundColor: _fullScreenMode ? Colors.black : Styles.appBackground,
         body: SafeArea(
             top: true,
             bottom: false,
             child: ChangeNotifierProvider<PlayerStateNotifier>.value(
                 value: playState,
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  VideoPlayerV2(
-                    videoId: getActiveVideoKey(),
-                    controllerInterface: this,
-                  ),
-                  Expanded(child: _buildVideoList())
+                child: Stack(children: [
+                  Column(mainAxisSize: MainAxisSize.min, children: [
+                    VideoPlayerV2(
+                      videoId: getActiveVideoKey(),
+                      controllerInterface: this,
+                    ),
+                    //_buildTabSystem()[0],
+                    Consumer<PlayerStateNotifier>(
+                        builder: (context, playerNotifier, w) {
+                      return Expanded(
+                          child: CustomScrollView(slivers: [
+                        SliverList(
+                            delegate: SliverChildListDelegate([
+                          _buildActiveVideoName(),
+                          widget.data.subscribed
+                              ? _buildLessonDescriptorSub()
+                              : _buildLessonDescriptor(),
+                        ])),
+                        SliverList(
+                            delegate: SliverChildListDelegate(
+                          _buildTabSystem(),
+                        )),
+                        _buildSelectedTabPage(),
+                      ]));
+                    })
+                  ]),
+                  _buildSubscribeButton(),
                 ]))));
+  }
+
+  Widget _buildSubscribeButton() {
+    if (!widget.data.subscribed) {
+      return Positioned(
+        bottom: 0,
+        right: 0,
+        left: 0,
+        child: GestureDetector(
+          child: Container(
+            alignment: Alignment.topCenter,
+            height: 80,
+            color: Color(0xff37A000),
+            child: Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Text(
+                  '▶︎  레슨 시작하기',
+                  style: Styles.font18Text,
+                )),
+          ),
+          onTap: () {
+            onSubscribe();
+          },
+        ),
+      );
+    } else {
+      return new Container();
+    }
+  }
+
+  List<Widget> _buildTabSystem() {
+    var tabBar = TabBar(controller: _controller, tabs: [
+      Tab(text: '동영상  리스트'),
+      Tab(text: '레슨 상세 설명'),
+    ]);
+
+    var tabView = Container(
+        height: 500,
+        child: TabBarView(
+          controller: _controller,
+          children: <Widget>[
+            _buildVideoList(),
+            Icon(Icons.directions_transit),
+          ],
+        ));
+
+    return [tabBar];
+  }
+
+  SliverList _buildSelectedTabPage() {
+    List<Widget> list;
+    if (_selectedPage == 0) {
+      list = _buildVideoListSliverChild();
+    } else {
+      list = _buildLessonDescListSliverChild();
+    }
+
+    return SliverList(delegate: SliverChildListDelegate(list));
+  }
+
+  Widget _buildActiveVideoName() {
+    if (widget.data.subscribed && activeDesc != null) {
+      return Container(
+        height: 30,
+        padding: EdgeInsets.only(left: 10),
+        color: Colors.black45,
+        alignment: Alignment.centerLeft,
+        child: Text(
+          '◉ ' + activeDesc.snippet.title,
+          style: Styles.font12Text,
+        ),
+      );
+    } else {
+      return Container(
+        height: 0,
+      );
+    }
+  }
+
+  Widget _buildLessonDescriptor() {
+    return Container(
+        padding:
+            const EdgeInsets.only(top: 20, bottom: 10, left: 10, right: 10),
+        child: LessonWidgets.buildDescriptor(widget.desc));
+  }
+
+  Widget _buildLessonDescriptorSub() {
+    return Container(
+      padding: const EdgeInsets.only(top: 20, bottom: 10, left: 10, right: 10),
+      child: LessonProgressBarWidget.forLesson(
+        desc: widget.desc,
+        onBarClick: () {},
+        onSubscribeClick: onSubscribe,
+      ),
+    );
+  }
+
+  List<Widget> _buildVideoListSliverChild() {
+    int itemCount = videoDescList.length;
+
+    List<Widget> items = videoDescList.map((e) {
+      return Consumer<PlayerStateNotifier>(builder: (_, playState, __) {
+        return new VideoItemWidget(e, e == activeDesc, (desc) {
+          OnSelectVideo(desc);
+        });
+      });
+    }).toList();
+
+    items.add(Consumer<PlayerStateNotifier>(builder: (_, playState, __) {
+      return new Container(height: 100);
+    }));
+
+    return items;
   }
 
   Widget _buildVideoList() {
     int itemCount = videoDescList.length;
 
     return ListView.builder(
-        itemCount: itemCount + 3,
+        itemCount: itemCount + 1,
         itemBuilder: (context, index) {
           return Consumer<PlayerStateNotifier>(builder: (_, playState, __) {
-            if (index == 1)
-              return Padding(
-                padding: const EdgeInsets.only(
-                    top: 5, bottom: 10, left: 20, right: 20),
-                child: LessonCardDetailBarWidget.forLesson(
-                  desc: widget.desc,
-                  onBarClick: () {},
-                  onSubscribeClick: onSubscribe,
-                ),
-                //   child: LessonCardSimpleWidget(widget.desc),
-              );
-            else if (index == 0)
-              return _lessonDesc();
-            else if ((index - 2) < itemCount)
-              return _videoItem(videoDescList[index - 2]);
+            if ((index) < itemCount)
+              return VideoItemWidget(
+                  videoDescList[index], videoDescList[index] == activeDesc,
+                  (desc) {
+                OnSelectVideo(desc);
+              });
             else
               return Container(
                 height: 50,
@@ -193,131 +323,43 @@ class LessonPageState extends State<LessonPage>
         });
   }
 
-  Widget _lessonDesc() {
-    return new Column(children: [
-      Padding(
-          padding: EdgeInsets.only(top: 5, bottom: 10),
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            //height: 100,
-            //color: Colors.black12,
-            child: Text(
-              '이 레슨을 플러터를 처음 배우는 분들을 위해 준비한 강좌입니다.\n이 레슨을 플러터를 처음 배우는 분들을 위해 준비한 강좌입니다',
-              style: new TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          )),
-//    Padding(
-//    padding: EdgeInsets.symmetric(horizontal: 10),
-//    child : Divider(color: Colors.black12, height: 1,thickness: 2))
-    ]);
+  List<Widget> _buildLessonDescListSliverChild() {
+    List<Widget> descList = new List<Widget>();
+
+    descList = [
+      _buildSpace(),
+      _buildTitle('◼︎ 레슨에 대한 소개'),
+      _buildDesc(
+          '프로그램을 처음 배우는 사람들을 위한개 강의 입니다.언어에 대한 지식이 없어도 처음 부터 쉽게 따라할 수 있도록 만들어 졌습니다'),
+      _buildTitle('◼︎ 크리에이터 소개'),
+    ];
+
+    return descList;
   }
 
-  Widget _videoItem(VideoDesc desc) {
-    //  String image =  desc.snippet.getThumnail(level:0);
-
-    Image thumnail = Image.network(
-      YoutubePlayer.getThumbnail(
-          videoId: desc.videoKey, quality: ThumbnailQuality.standard),
-      fit: BoxFit.fitHeight,
-      alignment: Alignment.topLeft,
+  Widget _buildSpace() {
+    return new Container(
+      height: 10,
     );
+  }
 
-    var imageUrl = YoutubePlayer.getThumbnail(
-        videoId: desc.videoKey, quality: ThumbnailQuality.standard);
+  Widget _buildTitle(String text) {
+    return new Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        alignment: Alignment.topLeft,
+        child: Text(
+          text,
+          style: Styles.font15Text,
+        ));
+  }
 
-    VideoData data = LessonDataManager.singleton().getVideoData(desc.videoKey);
-
-    // desc.snippet.
-    String timeText = desc
-        .playTimeText; //'${desc.snippet.durationH}H ${desc.snippet.durationM}분 ${desc.snippet.durationS}초';
-    double p = getVideoProgress(desc);
-
-    //double totalTime = desc.snippet.durationM * 60.0 + desc.snippet.durationS;
-    //double playTime = data.time;
-    //double p = playTime / totalTime;
-
-    IconData playIcon = Icons.radio_button_unchecked;
-
-    if (data.completed)
-      playIcon = Icons.brightness_1;
-    else if (data.time > 0)
-      playIcon = Icons.play_arrow;
-    else
-      playIcon = Icons.radio_button_unchecked;
-
-    final double height = 90.0;
-
-    return Container(
-        margin: EdgeInsets.only(top: 12.0),
-        height: height,
-        //color: Colors.amber,
-        child: GestureDetector(
-          onTap: () {
-            OnSelectVideo(desc);
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-//              Padding(
-//                  padding: EdgeInsets.only(right: 0, left: 0),
-//                  child: Icon(playIcon, size: 38, color: Colors.white)),
-              Padding(
-                  padding: EdgeInsets.only(left: 5, right: 0),
-                  child: Container(
-                      width: toSDWidth(height),
-                      height: height,
-                      child: Stack(children: [
-                        Container(
-                          // child : thumnail,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              image: DecorationImage(
-                                  image: NetworkImage(imageUrl),
-                                  fit: BoxFit.fitHeight,
-                                  colorFilter:
-                                      ColorFilter.srgbToLinearGamma())),
-                        ),
-                        Center(
-                            child:
-                                Icon(playIcon, size: 50, color: Colors.white))
-                      ]))),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 0),
-                  child: Container(
-                    //  color: Colors.black12,
-                    child: Stack(
-                        //crossAxisAlignment: CrossAxisAlignment.start,
-                        // mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Positioned(
-                              left: 10,
-                              top: 15,
-                              right: 5,
-                              child: Text(desc.snippet.title,
-                                  style: Styles.font13Text,
-                                  overflow: TextOverflow.ellipsis)),
-                          Positioned(
-                              left: 10,
-                              bottom: 25,
-                              child: SizedBox(
-                                  width: 80,
-                                  child: Text(timeText,
-                                      textAlign: TextAlign.left,
-                                      style: Styles.font10Text,
-                                      overflow: TextOverflow.ellipsis))),
-                          Positioned(
-                            left: 10,
-                            bottom: 15,
-                            child: okProgressBar(width: 190, height: 8, p: p),
-                          )
-                        ]),
-                  ),
-                ),
-              )
-            ],
-          ),
+  Widget _buildDesc(String text) {
+    return new Container(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+        alignment: Alignment.topLeft,
+        child: Text(
+          text,
+          style: Styles.font12Text,
         ));
   }
 }

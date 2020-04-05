@@ -6,7 +6,13 @@ import 'package:flutter/widgets.dart';
 abstract class Styles {
 
   static const appBackground = Color(0xff3C3C3C);
+  static const cardColor = Color(0xff222222);
 
+
+  static const progBar1 = Color(0xff80D0C7);
+  static const progBar0 = Color(0xff0093E8);
+
+  static const greenButtonColor = Color(0xff37A000);
 
   static const courseCardTitleText = TextStyle(
     color: Color(0xff11353B),
@@ -75,6 +81,15 @@ abstract class Styles {
     fontWeight: FontWeight.w700,
   );
 
+
+  static const font16Text = TextStyle(
+    color: Colors.white,
+    fontFamily: 'NotoSans',
+    fontSize: 16,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
+
   static const font15Text = TextStyle(
     color: Colors.white,
     fontFamily: 'NotoSans',
@@ -91,12 +106,21 @@ abstract class Styles {
     fontWeight: FontWeight.w400,
   );
 
+
+  static const font14Text = TextStyle(
+    color: Colors.white,
+    fontFamily: 'NotoSans',
+    fontSize: 14,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.w400,
+  );
+
   static const font12Text = TextStyle(
     color: Colors.white,
     fontFamily: 'NotoSans',
     fontSize: 12,
     fontStyle: FontStyle.normal,
-    fontWeight: FontWeight.w200,
+    fontWeight: FontWeight.w400,
   );
 
 

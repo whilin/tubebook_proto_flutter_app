@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mydemo_tabnavi2/common_widgets/cardWidgets.dart';
+import 'package:mydemo_tabnavi2/widgets/cardWidgets.dart';
 import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
-import 'package:mydemo_tabnavi2/common_widgets/widgets.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDescManager.dart';
+import 'package:mydemo_tabnavi2/widgets/widgets.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
-import '../widgets/lesson_card_widget.dart';
+import '../pages/LessonCardWidget.dart';
 import '../pages/lesson_page.dart';
 
 class TopicPage extends StatefulWidget {

@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:mydemo_tabnavi2/datas/TestDataLoader.dart';
+import 'package:mydemo_tabnavi2/managers/TestDataLoader.dart';
 
 import 'LocalDataLoader.dart';
-import 'YoutubeDataLoader.dart';
-import 'DataTypeDefine.dart';
+import '../net/YoutubeDataLoader.dart';
+import '../datas/DataTypeDefine.dart';
 
 class LessonDescManager with ChangeNotifier {
   static final LessonDescManager _singleton = new LessonDescManager._internal();
@@ -19,6 +19,15 @@ class LessonDescManager with ChangeNotifier {
   final List<TopicDesc> _topiclist = List<TopicDesc>();
   final List<LessonDesc> _lessonList = List<LessonDesc>();
   final List<VideoDesc> _videoList = List<VideoDesc>();
+
+
+  LessonDesc getLessonDesc(String lessonId) {
+    return  _lessonList.firstWhere((e) => e.lessonId == lessonId, orElse: ()=> null);
+  }
+
+  TopicDesc getTopic(String topicId) {
+    return _topiclist.firstWhere((e) => e.topicId == topicId);
+  }
 
   VideoDesc getVideoDesc(String videoKey) {
     try {
@@ -61,14 +70,6 @@ class LessonDescManager with ChangeNotifier {
     return l;
   }
 
-  LessonDesc getLessonDesc(String lessonId) {
-   return  _lessonList.firstWhere((e) => e.lessonId == lessonId, orElse: ()=> null);
-  }
-
-
-  TopicDesc getTopic(String topicId) {
-    return _topiclist.firstWhere((e) => e.topicId == topicId);
-  }
 
 
   /*

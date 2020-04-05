@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'YoutubeDataLoader.dart';
 part 'DataTypeDefine.g.dart';
 
 enum LessonLevel {
@@ -10,16 +9,31 @@ enum LessonLevel {
   Advanced,
 }
 
+
 @JsonSerializable()
-class TopicDesc
+class DBEntity {
+  String _id;
+
+  DBEntity();
+
+  DBEntity.fromJson(Map<String, dynamic> map) : _id = map['_id'];
+
+  String get objectId {
+    return _id;
+  }
+}
+
+
+@JsonSerializable()
+class TopicDesc  extends DBEntity
 {
   String topicId;
   String section;
 
   String name;
-  String imageAssetPath;
   String description;
-  // List<SubCategoryDesc> subCateList;
+
+  String imageAssetPath;
 
   List<String> tags;
 
@@ -31,21 +45,49 @@ class TopicDesc
 
 
 @JsonSerializable()
-class YoutuberDesc
+class ChannelDesc  extends DBEntity
 {
-  String youtuberId;
+  String channelId;
   String name;
 
-  YoutuberDesc();
+  ChannelDesc();
 
-  factory YoutuberDesc.fromJson(Map<String, dynamic> json) => _$YoutuberDescFromJson(json);
-  Map<String, dynamic> toJson() => _$YoutuberDescToJson(this);
+  factory ChannelDesc.fromJson(Map<String, dynamic> json) => _$ChannelDescFromJson(json);
+  Map<String, dynamic> toJson() => _$ChannelDescToJson(this);
 }
 
 
+@JsonSerializable()
+class LessonVideo {
+  String videoKey;
+  String title;
+
+  LessonVideo();
+
+  factory LessonVideo.fromJson(Map<String, dynamic> json) => _$LessonVideoFromJson(json);
+  Map<String, dynamic> toJson() =>_$LessonVideoToJson(this);
+
+  @JsonKey(ignore: true)
+  YoutubeData snippet;
+
+
+  double get totalPlayTime {
+    return snippet.durationH * 60.0 * 60.0 + snippet.durationM * 60.0 + snippet.durationS;
+  }
+
+  String get playTimeText {
+    String text = '';
+
+    if(snippet.durationH > 0)
+      text += '${snippet.durationH}시간 ';
+
+    text += '${snippet.durationM}분 ${snippet.durationS}초';
+    return text;
+  }
+}
 
 @JsonSerializable()
-class LessonDesc
+class LessonDesc  extends DBEntity
 {
   String lessonId;
 
@@ -63,88 +105,41 @@ class LessonDesc
 
   List<String> videoList = List<String> ();
 
+
+  int publish;
+  List<LessonVideo> videoListEx = new List<LessonVideo>();
+
   LessonDesc();
 
   factory LessonDesc.fromJson(Map<String, dynamic> json) => _$LessonDescFromJson(json);
   Map<String, dynamic> toJson() => _$LessonDescToJson(this);
-
-  /*
-  LessonDesc.fromJson(Map<String, dynamic> json) {
-    lessonId = json['lessonId'];
-
-    videoList = List<String>.from(json[videoList]);
-  }
-
-  Map<String, dynamic> toJson() {
-
-    return {
-      'lessonId'    : lessonId,
-      'mainTopicId' : mainTopicId,
-      'youtuberId'  : youtuberId,
-      'title'       : title,
-      'description' : description,
-      'tags'        : tags,
-      'level'       : level,
-      'recommanded' : recommanded,
-      'imageAssetPath' : imageAssetPath,
-      'videoList'   : videoList
-    };
-  }
-   */
-
-//
-//  LessonData _data ;
-//
-//  LessonData get data {
-//    if(_data ==null) {
-//      _data = LessonPlayModel.singleton().getLessonData(lessonId);
-//    }
-//    return _data;
-//  }
-//
-//  List<int> getProgressStatus()
-//  {
-//    int completed = 0;
-//
-//    for(var key in videoList)
-//      {
-//        var videoData = LessonPlayModel.singleton().getVideoData(key);
-//        if ( videoData.completed || videoData.time > 0 )
-//          completed++;
-//      }
-//
-//    return [ videoList.length, completed];
-//  }
 }
 
+
 @JsonSerializable()
-class VideoDesc
+class VideoDesc  extends DBEntity
 {
+  //String videoKey;
+  //String comment;
+
   String videoKey;
-  String comment;
+  String channelId;
+  String description;
+  String title;
+
+  String hintTopic;
+  String hintLesson;
+  int markTag;
+
 
   VideoDesc();
-
-//  VideoDesc.fromJson(Map<String, dynamic> json) {
-//    videoKey = json['videoKey'];
-//    comment  = json['comment'];
-//  }
-
 
   factory VideoDesc.fromJson(Map<String, dynamic> json) => _$VideoDescFromJson(json);
   Map<String, dynamic> toJson() => _$VideoDescToJson(this);
 
   @JsonKey(ignore: true)
   YoutubeData snippet;
-//
-//  VideoData _data;
-//
-//  VideoData get data {
-//    if(_data ==null)
-//      _data = LessonPlayModel.singleton().getVideoData(videoKey);
-//
-//    return _data;
-//  }
+
 
   double get totalPlayTime {
     return snippet.durationH * 60.0 * 60.0 + snippet.durationM * 60.0 + snippet.durationS;
@@ -159,14 +154,8 @@ class VideoDesc
     text += '${snippet.durationM}분 ${snippet.durationS}초';
     return text;
   }
-//
-//  double get progress {
-//    double t = totalPlayTime;
-//    double p = data.time;
-//
-//    return min( p / t, 1);
-//  }
 }
+
 
 //!
 @JsonSerializable()
@@ -187,18 +176,19 @@ class LessonData
   String lessonId;
   bool favorited;
   bool subscribed;
+  bool completed;
 
   String lastPlayVideoKey;
 
   LessonData(this.lessonId) :
         favorited = false ,
         subscribed = false,
+        completed = false,
         lastPlayVideoKey = null;
 
 
   factory LessonData.fromJson(Map<String, dynamic> json) => _$LessonDataFromJson(json);
   Map<String, dynamic> toJson() => _$LessonDataToJson(this);
-
 
 }
 
@@ -216,10 +206,15 @@ class VideoData
   String videoKey;
 
   bool completed = false;
-  //bool playing = false;
+  double maxTime  = 0.0;
   double time = 0.0;
 
   VideoData(this.videoKey) {}
+
+  void setPlayTime(double time) {
+      this.time = time;
+      maxTime = max(this.time, maxTime);
+  }
 
 
   factory VideoData.fromJson(Map<String, dynamic> json) => _$VideoDataFromJson(json);

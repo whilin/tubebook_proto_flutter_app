@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
-import 'package:mydemo_tabnavi2/pages/home_page.dart';
+import 'managers/LessonDataManager.dart';
+import 'pages/home_page.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:provider/provider.dart';
-import 'datas/LessonDescManager.dart';
+import 'managers/LessonDescManager.dart';
+import 'pages/more_page.dart';
 import 'pages/myclass_page.dart';
 import 'sandbag/post_title_bar_page.dart';
 import 'pages/search_page.dart';
@@ -160,7 +161,7 @@ class _MyMaterialAppHomeState extends State<MyMaterialAppHome>
                 title: Text('My Class')),
             BottomNavigationBarItem(
                 icon: Icon(Icons.menu),
-                title: Text('Setting'))
+                title: Text('More'))
 
           ],
           onTap: (index) {
@@ -173,7 +174,7 @@ class _MyMaterialAppHomeState extends State<MyMaterialAppHome>
               HomePage(),
               SearchPage(),
               MyClassPage(),
-              PostTitleBarPage(),
+              MorePage(),
             ])
     );
   }

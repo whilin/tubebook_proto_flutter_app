@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mydemo_tabnavi2/common_widgets/cardWidgets.dart';
+import 'package:mydemo_tabnavi2/widgets/cardWidgets.dart';
 import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/libs/okUtils.dart';
 import 'package:mydemo_tabnavi2/pages/lesson_page.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -21,18 +21,18 @@ class TopicCard extends StatelessWidget {
 
   TopicCard.page(this.desc, {this.width, this.height}) : this.page = true {}
 
+  void onClickTopic(BuildContext context) {
+    Navigator.of(context).push<void>(CupertinoPageRoute(
+      builder: (context) => new TopicPageEx(desc),
+      fullscreenDialog: false,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return PressableCard(
       onPressed: () {
-//        Navigator.of(context).push<void>(MaterialPageRoute(
-//          builder: (context) => new TopicPage(desc),
-//          fullscreenDialog: false,
-//        ));
-        Navigator.of(context).push<void>(CupertinoPageRoute(
-          builder: (context) => new TopicPageEx(desc),
-          fullscreenDialog: false,
-        ));
+        onClickTopic(context);
       },
       child: Stack(
         fit: StackFit.loose,

@@ -6,13 +6,19 @@ part of 'DataTypeDefine.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+DBEntity _$DBEntityFromJson(Map<String, dynamic> json) {
+  return DBEntity();
+}
+
+Map<String, dynamic> _$DBEntityToJson(DBEntity instance) => <String, dynamic>{};
+
 TopicDesc _$TopicDescFromJson(Map<String, dynamic> json) {
   return TopicDesc()
     ..topicId = json['topicId'] as String
     ..section = json['section'] as String
     ..name = json['name'] as String
-    ..imageAssetPath = json['imageAssetPath'] as String
     ..description = json['description'] as String
+    ..imageAssetPath = json['imageAssetPath'] as String
     ..tags = (json['tags'] as List)?.map((e) => e as String)?.toList();
 }
 
@@ -20,21 +26,33 @@ Map<String, dynamic> _$TopicDescToJson(TopicDesc instance) => <String, dynamic>{
       'topicId': instance.topicId,
       'section': instance.section,
       'name': instance.name,
-      'imageAssetPath': instance.imageAssetPath,
       'description': instance.description,
+      'imageAssetPath': instance.imageAssetPath,
       'tags': instance.tags,
     };
 
-YoutuberDesc _$YoutuberDescFromJson(Map<String, dynamic> json) {
-  return YoutuberDesc()
-    ..youtuberId = json['youtuberId'] as String
+ChannelDesc _$ChannelDescFromJson(Map<String, dynamic> json) {
+  return ChannelDesc()
+    ..channelId = json['channelId'] as String
     ..name = json['name'] as String;
 }
 
-Map<String, dynamic> _$YoutuberDescToJson(YoutuberDesc instance) =>
+Map<String, dynamic> _$ChannelDescToJson(ChannelDesc instance) =>
     <String, dynamic>{
-      'youtuberId': instance.youtuberId,
+      'channelId': instance.channelId,
       'name': instance.name,
+    };
+
+LessonVideo _$LessonVideoFromJson(Map<String, dynamic> json) {
+  return LessonVideo()
+    ..videoKey = json['videoKey'] as String
+    ..title = json['title'] as String;
+}
+
+Map<String, dynamic> _$LessonVideoToJson(LessonVideo instance) =>
+    <String, dynamic>{
+      'videoKey': instance.videoKey,
+      'title': instance.title,
     };
 
 LessonDesc _$LessonDescFromJson(Map<String, dynamic> json) {
@@ -48,8 +66,12 @@ LessonDesc _$LessonDescFromJson(Map<String, dynamic> json) {
     ..level = _$enumDecodeNullable(_$LessonLevelEnumMap, json['level'])
     ..recommanded = json['recommanded'] as int
     ..imageAssetPath = json['imageAssetPath'] as String
-    ..videoList =
-        (json['videoList'] as List)?.map((e) => e as String)?.toList();
+    ..videoList = (json['videoList'] as List)?.map((e) => e as String)?.toList()
+    ..publish = json['publish'] as int
+    ..videoListEx = (json['videoListEx'] as List)
+        ?.map((e) =>
+            e == null ? null : LessonVideo.fromJson(e as Map<String, dynamic>))
+        ?.toList();
 }
 
 Map<String, dynamic> _$LessonDescToJson(LessonDesc instance) =>
@@ -64,6 +86,8 @@ Map<String, dynamic> _$LessonDescToJson(LessonDesc instance) =>
       'recommanded': instance.recommanded,
       'imageAssetPath': instance.imageAssetPath,
       'videoList': instance.videoList,
+      'publish': instance.publish,
+      'videoListEx': instance.videoListEx,
     };
 
 T _$enumDecode<T>(
@@ -107,12 +131,22 @@ const _$LessonLevelEnumMap = {
 VideoDesc _$VideoDescFromJson(Map<String, dynamic> json) {
   return VideoDesc()
     ..videoKey = json['videoKey'] as String
-    ..comment = json['comment'] as String;
+    ..channelId = json['channelId'] as String
+    ..description = json['description'] as String
+    ..title = json['title'] as String
+    ..hintTopic = json['hintTopic'] as String
+    ..hintLesson = json['hintLesson'] as String
+    ..markTag = json['markTag'] as int;
 }
 
 Map<String, dynamic> _$VideoDescToJson(VideoDesc instance) => <String, dynamic>{
       'videoKey': instance.videoKey,
-      'comment': instance.comment,
+      'channelId': instance.channelId,
+      'description': instance.description,
+      'title': instance.title,
+      'hintTopic': instance.hintTopic,
+      'hintLesson': instance.hintLesson,
+      'markTag': instance.markTag,
     };
 
 TopicData _$TopicDataFromJson(Map<String, dynamic> json) {
@@ -132,6 +166,7 @@ LessonData _$LessonDataFromJson(Map<String, dynamic> json) {
   )
     ..favorited = json['favorited'] as bool
     ..subscribed = json['subscribed'] as bool
+    ..completed = json['completed'] as bool
     ..lastPlayVideoKey = json['lastPlayVideoKey'] as String;
 }
 
@@ -140,6 +175,7 @@ Map<String, dynamic> _$LessonDataToJson(LessonData instance) =>
       'lessonId': instance.lessonId,
       'favorited': instance.favorited,
       'subscribed': instance.subscribed,
+      'completed': instance.completed,
       'lastPlayVideoKey': instance.lastPlayVideoKey,
     };
 
@@ -148,12 +184,14 @@ VideoData _$VideoDataFromJson(Map<String, dynamic> json) {
     json['videoKey'] as String,
   )
     ..completed = json['completed'] as bool
+    ..maxTime = (json['maxTime'] as num)?.toDouble()
     ..time = (json['time'] as num)?.toDouble();
 }
 
 Map<String, dynamic> _$VideoDataToJson(VideoData instance) => <String, dynamic>{
       'videoKey': instance.videoKey,
       'completed': instance.completed,
+      'maxTime': instance.maxTime,
       'time': instance.time,
     };
 

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -212,4 +214,49 @@ class okPressableWidget extends StatelessWidget{
 
 abstract class CommonWidgets {
   static Widget buildRoundButton({String title, Color color}) {}
+}
+
+
+class okBoxText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  final Color bgColor;
+
+  okBoxText({this.text, this.style, this.bgColor}) ;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: bgColor ,
+        borderRadius: BorderRadius.circular(2.0)
+      ),
+      child: Padding(padding: EdgeInsets.symmetric(horizontal: 2), child: Text(text, style: style,)),
+    );
+  }
+
+}
+
+
+class okBoxLineText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  final Color bgColor;
+
+  okBoxLineText({this.text, this.style, this.bgColor}) ;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+          color: bgColor ,
+          borderRadius: BorderRadius.circular(2.0),
+          border: Border.all(color: Colors.white)
+      ),
+      child: Padding(padding: EdgeInsets.symmetric(horizontal: 2), child: Text(text, style: style,)),
+    );
+  }
+
 }

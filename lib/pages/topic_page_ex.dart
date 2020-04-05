@@ -3,18 +3,19 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mydemo_tabnavi2/common_widgets/cardWidgets.dart';
+import 'package:mydemo_tabnavi2/widgets/LessonWidget.dart';
+import 'package:mydemo_tabnavi2/widgets/cardWidgets.dart';
 import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
 import 'package:mydemo_tabnavi2/datas/DataFuncs.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
-import 'package:mydemo_tabnavi2/common_widgets/widgets.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDescManager.dart';
+import 'package:mydemo_tabnavi2/widgets/widgets.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/libs/okUtils.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
 import 'package:mydemo_tabnavi2/widgets/filter_action_button.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
-import '../widgets/lesson_card_widget.dart';
+import 'LessonCardWidget.dart';
 import 'lesson_page.dart';
 
 class TopicPageEx extends StatefulWidget {
@@ -32,6 +33,44 @@ class _TopicPageStateEx extends State<TopicPageEx> {
   final Set<LessonLevel> _levelFilter = Set();
 
   final Set<String> _tagFilter = Set();
+
+
+  void onLevelFilter(LessonLevel level, bool on) {
+    setState(() {
+      if (on)
+        _levelFilter.add(level);
+      else
+        _levelFilter.remove(level);
+    });
+  }
+
+  bool isLevelFilter(LessonLevel level) {
+    return _levelFilter.contains(level);
+  }
+
+  void onTagFilter(String tag, bool on) {
+    setState(() {
+      if (on)
+        _tagFilter.add(tag);
+      else
+        _tagFilter.remove(tag);
+    });
+  }
+
+  bool isFilteredLesson(LessonDesc lessonDesc) {
+    bool selected = true;
+
+    if (_levelFilter.length != 0) {
+      if (!_levelFilter.contains(lessonDesc.level)) selected = false;
+    }
+
+    if (_tagFilter.length != 0) {
+      if (_tagFilter.intersection(lessonDesc.tags).length == 0)
+        selected = false;
+    }
+
+    return selected;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +119,8 @@ class _TopicPageStateEx extends State<TopicPageEx> {
             if (index == 0)
               return Container(height: 20);
             else if (index == 1)
-              return _buildFilterChipsEx(context);
+              // return _buildFilterChipsEx(context);
+              return Container();
             else if (index == 2)
               return Container(height: 20);
             else if (index == 3)
@@ -92,94 +132,6 @@ class _TopicPageStateEx extends State<TopicPageEx> {
       ]),
     );
   }
-
-  void onLevelFilter(LessonLevel level, bool on) {
-    setState(() {
-      if (on)
-        _levelFilter.add(level);
-      else
-        _levelFilter.remove(level);
-    });
-  }
-
-  bool isLevelFilter(LessonLevel level) {
-    return _levelFilter.contains(level);
-  }
-
-  void onTagFilter(String tag, bool on) {
-    setState(() {
-      if (on)
-        _tagFilter.add(tag);
-      else
-        _tagFilter.remove(tag);
-    });
-  }
-
-  /*
-  Widget _buildFilterChips(BuildContext context) {
-    const List<LessonLevel> levels = [
-      LessonLevel.Beginnger,
-      LessonLevel.Intermediate,
-      LessonLevel.Advanced
-    ];
-
-    List<okSelectableLabel> levelChips = levels.map<okSelectableLabel>((e) {
-      String title;
-      if (e == LessonLevel.Beginnger)
-        title = "초급";
-      else if (e == LessonLevel.Intermediate)
-        title = "중급";
-      else //if( e == LessonLevel.Advanced)
-        title = "고급";
-
-      return okSelectableLabel(title, isLevelFilter(e), (on) {
-        onLevelFilter(e, on);
-      });
-    }).toList();
-
-    var lessonList = LessonDescManager.singleton()
-        .queryLessonListByTopic(widget.desc.topicId);
-    Set<String> tagSet = Set();
-    for (var lesson in lessonList) {
-      tagSet.addAll(lesson.tags);
-    }
-
-    List<okSelectableLabel> tagChips = tagSet.map<okSelectableLabel>((e) {
-      Widget c10 = okSelectableLabel(e, _tagFilter.contains(e), (on) {
-        onTagFilter(e, on);
-      });
-
-      return c10;
-    }).toList();
-
-    var firstList = SizedBox(
-        height: 35,
-        child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: levelChips));
-
-    var secondList = SizedBox(
-        height: 35,
-        child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: tagChips));
-
-    //firstLine.add(c1);
-
-    return SizedBox(
-      height: 70,
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        firstList,
-        secondList
-        // Expanded(child:Row(children: firstLine))
-        // Row(children : firstLine)
-      ]),
-    );
-  }
-
-   */
 
   Widget _buildFilterChipsEx(BuildContext context) {
     List<Widget> levelChips = LessonLevel.values.map<Widget>((e) {
@@ -266,20 +218,6 @@ class _TopicPageStateEx extends State<TopicPageEx> {
     return padding;
   }
 
-  bool isFilteredLesson(LessonDesc lessonDesc) {
-    bool selected = true;
-
-    if (_levelFilter.length != 0) {
-      if (!_levelFilter.contains(lessonDesc.level)) selected = false;
-    }
-
-    if (_tagFilter.length != 0) {
-      if (_tagFilter.intersection(lessonDesc.tags).length == 0)
-        selected = false;
-    }
-
-    return selected;
-  }
 }
 
 class TopicSliverAppBar extends SliverPersistentHeaderDelegate {
@@ -294,15 +232,16 @@ class TopicSliverAppBar extends SliverPersistentHeaderDelegate {
     return max(0, min(1, v));
   }
 
+  void _onClosePage(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Stack(fit: StackFit.expand, overflow: Overflow.visible, children: [
       ClipPath(
           clipper: _DialogonalClipper(),
-//          child: Image.network(
-//              'https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-//              fit: BoxFit.cover)
           child: Image.asset(getImageAssetFile('logo_flutter_2.jpg'),
               fit: BoxFit.cover,
               colorBlendMode: BlendMode.srcOver,
@@ -322,31 +261,9 @@ class TopicSliverAppBar extends SliverPersistentHeaderDelegate {
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  _onClosePage(context);
                 })),
       ),
-
-      /*
-      Positioned(
-        right: 10,
-        top: 32,
-        child: Opacity(
-            opacity: getOpacity(shrinkOffset),
-            child: IconButton(
-                //size: 30,
-                //bgColor: Colors.white,
-                iconSize: 37,
-                padding: EdgeInsets.all(7),
-                icon: Icon(
-                  Icons.favorite,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                })),
-      ),
-
-       */
       Positioned(
           bottom: 0,
           left: 20,
@@ -358,12 +275,29 @@ class TopicSliverAppBar extends SliverPersistentHeaderDelegate {
                       size: 100,
                       imagePath: getImageAssetFile(desc.imageAssetPath))))),
       Positioned(
+          bottom: 50,
+          left: 130,
+          right: 10,
+          child: Opacity(
+              opacity: getOpacity(shrinkOffset),
+              child: Text(
+                '자바 개발자가 되는 길',
+                style: Styles.font18Text,
+                overflow: TextOverflow.ellipsis,
+              ))),
+      Positioned(
+          bottom: -15,
+          left: 130,
+          child: Opacity(
+              opacity: getOpacity(shrinkOffset),
+              child: LessonWidgets.buildCreatorLabel())),
+      Positioned(
           bottom: -70,
           right: -50,
           child: Opacity(
-                opacity: getOpacity(shrinkOffset),
-                child: new FilterActionButton(onSelected: (int id) {}),
-              )),
+            opacity: getOpacity(shrinkOffset),
+            child: new FilterActionButton(onSelected: (int id) {}),
+          )),
     ]);
   }
 

@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDataManager.dart';
-import 'package:mydemo_tabnavi2/datas/LessonDescManager.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDataManager.dart';
+import 'package:mydemo_tabnavi2/managers/LessonDescManager.dart';
 import 'package:mydemo_tabnavi2/libs/okUtils.dart';
 import 'package:mydemo_tabnavi2/sandbag/topic_page.dart';
-import 'package:mydemo_tabnavi2/common_widgets/cardWidgets.dart';
+import 'package:mydemo_tabnavi2/widgets/cardWidgets.dart';
 import 'package:provider/provider.dart';
 
 import '../styles.dart';
@@ -16,24 +16,11 @@ import '../widgets/topic_card_widget.dart';
 import 'topic_page_ex.dart';
 
 class HomePage extends StatelessWidget {
-  /*
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return CupertinoTabView(builder: (context) {
-      final model = Provider.of<LessonDescModel>(context);
 
-      return DecoratedBox(
-          decoration: BoxDecoration(color: Color(0xff3C3C3C)),
-          child: SafeArea(child: buildList(model)));
-    });
-  }
-*/
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<LessonDescManager>(context);
 
-    // TODO: implement build
     return Scaffold(
         //appBar: AppBar(title : Text('hello')),
         backgroundColor: Color(0xff3C3C3C),
@@ -58,14 +45,6 @@ class HomePage extends StatelessWidget {
       Container(
         height: 20,
       ),
-//      TopicsSection(model.getTopicList()),
-//      Container(
-//        height: 20,
-//      ),
-//      TopicsSection(model.getTopicList()),
-//      // categoryCardListView(model.getTopicList()),
-
-      //Text("hello")
     ]);
   }
 }
