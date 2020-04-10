@@ -105,9 +105,9 @@ class _TopicPageState extends State<TopicPage> {
                         child: okCircleImage.color(
                             size: 100,
                             bgColor: Color.fromRGBO(255, 255, 255, 1))),
-                    Center(
-                        child: okCircleImage.image(
-                            size: 95, imagePath: widget.desc.imageAssetPath))
+//                    Center(
+//                        child: okCircleImage.image(
+//                            size: 95, imagePath: widget.desc.imageAssetPath))
                   ]))),
           Align(
               alignment: Alignment(0, 0.9),

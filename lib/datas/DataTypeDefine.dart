@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mydemo_tabnavi2/net/YoutubeApi.dart';
 part 'DataTypeDefine.g.dart';
 
 enum LessonLevel {
@@ -10,32 +11,47 @@ enum LessonLevel {
 }
 
 
+enum TopicType {
+  Category,
+  Curation
+}
+
+
+enum ChannelType {
+  Creator,
+  Curator
+}
+
 @JsonSerializable()
 class DBEntity {
-  String _id;
+
+  @JsonKey(name : '_id')
+  String id;
 
   DBEntity();
 
-  DBEntity.fromJson(Map<String, dynamic> map) : _id = map['_id'];
+  DBEntity.fromJson(Map<String, dynamic> map) : id = map['_id'];
 
   String get objectId {
-    return _id;
+    return id;
   }
+
 }
+
 
 
 @JsonSerializable()
 class TopicDesc  extends DBEntity
 {
   String topicId;
+  String name;
+
   String section;
 
-  String name;
-  String description;
+  @JsonKey(defaultValue: TopicType.Category)
+  TopicType topicType;
+  String channelId; //Creator or Curator Id
 
-  String imageAssetPath;
-
-  List<String> tags;
 
   TopicDesc();
 
@@ -50,10 +66,17 @@ class ChannelDesc  extends DBEntity
   String channelId;
   String name;
 
+  @JsonKey(defaultValue: ChannelType.Creator)
+  ChannelType channelType;
+
   ChannelDesc();
 
   factory ChannelDesc.fromJson(Map<String, dynamic> json) => _$ChannelDescFromJson(json);
   Map<String, dynamic> toJson() => _$ChannelDescToJson(this);
+
+
+  @JsonKey(ignore: true)
+  YoutubeChannelData snippet;
 }
 
 
@@ -68,15 +91,20 @@ class LessonVideo {
   Map<String, dynamic> toJson() =>_$LessonVideoToJson(this);
 
   @JsonKey(ignore: true)
-  YoutubeData snippet;
+  YoutubeVideoData snippet;
 
 
   double get totalPlayTime {
+    if(snippet==null)
+        return 1;
+
     return snippet.durationH * 60.0 * 60.0 + snippet.durationM * 60.0 + snippet.durationS;
   }
 
   String get playTimeText {
     String text = '';
+    if(snippet ==null)
+        return text;
 
     if(snippet.durationH > 0)
       text += '${snippet.durationH}시간 ';
@@ -92,10 +120,14 @@ class LessonDesc  extends DBEntity
   String lessonId;
 
   String mainTopicId;
+  String subTopicId;
+
   String youtuberId;
 
   String title;
   String description;
+  String detailDescription;
+
   Set<String> tags;
 
   LessonLevel level;
@@ -103,10 +135,10 @@ class LessonDesc  extends DBEntity
 
   String imageAssetPath;
 
-  List<String> videoList = List<String> ();
-
-
   int publish;
+
+  //List<String> videoList = List<String>();
+
   List<LessonVideo> videoListEx = new List<LessonVideo>();
 
   LessonDesc();
@@ -115,7 +147,7 @@ class LessonDesc  extends DBEntity
   Map<String, dynamic> toJson() => _$LessonDescToJson(this);
 }
 
-
+/*
 @JsonSerializable()
 class VideoDesc  extends DBEntity
 {
@@ -155,7 +187,7 @@ class VideoDesc  extends DBEntity
     return text;
   }
 }
-
+*/
 
 //!
 @JsonSerializable()
@@ -174,11 +206,10 @@ class TopicData
 class LessonData
 {
   String lessonId;
-  bool favorited;
-  bool subscribed;
-  bool completed;
-
-  String lastPlayVideoKey;
+  bool favorited =false;
+  bool subscribed=false;
+  bool completed=false;
+  String lastPlayVideoKey=null;
 
   LessonData(this.lessonId) :
         favorited = false ,
@@ -205,8 +236,14 @@ class VideoData
 {
   String videoKey;
 
+
+  @JsonKey(defaultValue: false)
   bool completed = false;
+
+  @JsonKey(defaultValue: 0.0)
   double maxTime  = 0.0;
+
+  @JsonKey(defaultValue: 0.0)
   double time = 0.0;
 
   VideoData(this.videoKey) {}
@@ -221,121 +258,6 @@ class VideoData
   Map<String, dynamic> toJson() => _$VideoDataToJson(this);
 }
 
-
-class YoutubeData {
-
-  dynamic thumbnail;
-
-  String kind,
-      id,
-      publishedAt,
-      channelId,
-      channelurl,
-      title,
-      description,
-      channelTitle,
-      url;
-
-  String duration,
-      dimension,
-      definition;
-
-  bool caption;
-
-  int durationH;
-  int durationM;
-  int durationS;
-
-  YoutubeData(this.id , dynamic itemData) {
-
-    //Snippet Info
-
-    thumbnail = {
-      'default': itemData['snippet']['thumbnails']['default'],
-      'medium': itemData['snippet']['thumbnails']['medium'],
-      'high': itemData['snippet']['thumbnails']['high']
-    };
-
-    publishedAt = itemData['snippet']['publishedAt'];
-    channelId = itemData['snippet']['channelId'];
-    channelurl = "https://www.youtube.com/channel/$channelId";
-    title = itemData['snippet']['title'];
-    description = itemData['snippet']['description'];
-    channelTitle = itemData['snippet']['channelTitle'];
-
-    kind = "video";
-    url = _getURL(kind, id);
-
-
-    //contentDetails
-    duration = itemData['contentDetails']['duration'];
-    dimension = itemData['contentDetails']['dimension'];
-    definition = itemData['contentDetails']['definition'];
-    caption =  itemData['contentDetails']['caption'] == 'true';
-
-    parseDurationTime(duration);
-  }
-
-  void parseDurationTime(String isoTime)
-  {
-
-//      //"duration": "PT15M51S",
-//      List<String> _list = isoTime.split(RegExp('[0-9]'));
-//      String isoTime = "PT15M51S";
-//      List<String> _list = isoTime.split(RegExp('[A-Z]+'));
-//      // isoTime.allMatches(string);
-
-    final iReg = RegExp(r'(\d+)');
-    var list = iReg.allMatches(isoTime).map((m) => m.group(0)).toList();
-
-    durationH = 0;
-    durationM = 0;
-    durationS = 0;
-
-    if(list.length ==3) {
-      durationH = int.parse(list[0]);
-      durationM = int.parse(list[1]);
-      durationS = int.parse(list[2]);
-    } else if( list.length ==2) {
-      durationH = 0;
-      durationM = int.parse(list[0]);
-      durationS = int.parse(list[1]);
-    } else if( list.length == 1) {
-      durationH = 0;
-      durationM = 0;
-      durationS = int.parse(list[0]);
-    }
-
-  }
-
-  String getThumnail({int level=0})  {
-
-    switch(level)
-    {
-      case 1 : return thumbnail['medium'];
-      case 2 : return thumbnail['high'];
-      default: return thumbnail['default'];
-    }
-
-  }
-
-  String _getURL(String kind, String id) {
-    String baseURL = "https://www.youtube.com/";
-    switch (kind) {
-      case 'channel':
-        return "$baseURL watch?v=$id";
-        break;
-      case 'video':
-        return "$baseURL watch?v=$id";
-        break;
-      case 'playlist':
-        return "$baseURL watch?v=$id";
-        break;
-    }
-    return baseURL;
-  }
-
-}
 
 
 @JsonSerializable()

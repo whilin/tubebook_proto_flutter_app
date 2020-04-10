@@ -90,7 +90,7 @@ class _LessonCardWidgetState extends State<LessonCardWidget>
   @override
   Widget build(BuildContext context) {
     String bgImage = YoutubePlayer.getThumbnail(
-        videoId: widget.desc.videoList[0], quality: ThumbnailQuality.standard);
+        videoId: widget.desc.videoListEx[0].videoKey, quality: ThumbnailQuality.standard);
 
     var width = MediaQuery.of(context).size.width - 10;
 
@@ -116,7 +116,9 @@ class _LessonCardWidgetState extends State<LessonCardWidget>
                   right: 20,
                   child: LessonWidgets.buildDescriptor(widget.desc)),
               new Positioned(
-                  top: 250, left: 20, child: LessonWidgets.buildCreator())
+                  top: 250,
+                  left: 20,
+                  child: LessonWidgets.buildCreator(widget.desc.youtuberId))
             ])));
 
     var tap = GestureDetector(

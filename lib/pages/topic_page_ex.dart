@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:mydemo_tabnavi2/managers/AssetsManager.dart';
 import 'package:mydemo_tabnavi2/widgets/LessonWidget.dart';
 import 'package:mydemo_tabnavi2/widgets/cardWidgets.dart';
 import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
@@ -77,38 +78,6 @@ class _TopicPageStateEx extends State<TopicPageEx> {
     return Scaffold(
       backgroundColor: Color(0xff3C3C3C),
       body: CustomScrollView(slivers: <Widget>[
-        /* SliverAppBar(
-          backgroundColor: Color(0xff3C3C3C),
-          expandedHeight: 160.0,
-          floating: true,
-          pinned: false,
-          leading: IconButton(
-              //size: 30,
-              //bgColor: Colors.white,
-              iconSize: 37,
-              padding: EdgeInsets.all(7),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              }),
-          actions: <Widget>[
-            okSelectableIcon(
-                initSelected: widget.data.favorited,
-                iconSize: 37,
-                iconDataOn: Icons.favorite,
-                iconDataOff: Icons.favorite_border,
-                iconColor: Colors.greenAccent,
-                onChangeState: (bool sel) {
-                  widget.data.favorited = sel;
-                  // Navigator.of(context).pop();
-                })
-          ],
-          flexibleSpace: _buildSilverPost(),
-        ),
-        */
         SliverPersistentHeader(
           pinned: false,
           floating: true,
@@ -271,9 +240,11 @@ class TopicSliverAppBar extends SliverPersistentHeaderDelegate {
               tag: desc.topicId,
               child: new Opacity(
                   opacity: getOpacity(shrinkOffset),
-                  child: new okCircleImage.image(
-                      size: 100,
-                      imagePath: getImageAssetFile(desc.imageAssetPath))))),
+                  child: new CircleAvatar(
+                        radius: 50,
+                      backgroundImage: AssetsManager.getTopicLogo(desc.topicId))))),
+                      //size: 100,
+                     // imagePath: getTopicLogoAsset(desc.topicId))))),
       Positioned(
           bottom: 50,
           left: 130,
@@ -281,7 +252,8 @@ class TopicSliverAppBar extends SliverPersistentHeaderDelegate {
           child: Opacity(
               opacity: getOpacity(shrinkOffset),
               child: Text(
-                '자바 개발자가 되는 길',
+                desc.name,
+                //'자바 개발자가 되는 길',
                 style: Styles.font18Text,
                 overflow: TextOverflow.ellipsis,
               ))),
@@ -290,7 +262,7 @@ class TopicSliverAppBar extends SliverPersistentHeaderDelegate {
           left: 130,
           child: Opacity(
               opacity: getOpacity(shrinkOffset),
-              child: LessonWidgets.buildCreatorLabel())),
+              child: LessonWidgets.buildCuratorLabel(desc.channelId))),
       Positioned(
           bottom: -70,
           right: -50,

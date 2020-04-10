@@ -75,8 +75,8 @@ class _MyClassPageState extends State<MyClassPage>
 //        ),
           SliverList(
               delegate: SliverChildListDelegate([
-            MyProfileHeader(),
-            Container(height: 20),
+            //MyProfileHeader(),
+            //Container(height: 20),
             _MyClassHeader2(),
             Container(
               height: 20,
@@ -212,7 +212,9 @@ class _MyClassHeader2 extends StatelessWidget {
     int completedLessons = LessonDataManager.singleton().queryCompletedLessonList().length;
     int completedVideos =LessonDataManager.singleton().queryCompletedVideoCount();
 
-    return Padding(
+    return SafeArea(
+        top: true,
+        child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           //color: Colors.amber,
@@ -229,7 +231,7 @@ class _MyClassHeader2 extends StatelessWidget {
               Expanded(child: getItem(completedVideos, "completed\nvideos"))
             ],
           ),
-        ));
+        )));
   }
 
   Widget getItem(int num, String title) {

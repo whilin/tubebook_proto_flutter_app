@@ -69,10 +69,12 @@ class PlayerStateNotifier with ChangeNotifier {
 class VideoPlayerV2 extends StatefulWidget {
   // "https://youtu.be/Rc9mMISDQws"
   //final String url;
-  final String videoId;
+  final LessonVideo videoDesc;
+  final VideoData videoData;
+
   final VideoPlayerControllerInterface controllerInterface;
 
-  VideoPlayerV2({this.videoId, this.controllerInterface});
+  VideoPlayerV2({this.videoDesc, this.controllerInterface}) : videoData = LessonDataManager.singleton().getVideoData(videoDesc.videoKey);
 
   @override
   State<VideoPlayerV2> createState() {
@@ -85,8 +87,9 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
     with YouTubePlayerListener, TickerProviderStateMixin {
   double _currentVideoSecond = 0.0;
 
-  VideoDesc _videoDesc;
-  VideoData _videoData;
+  //VideoDesc _videoDesc;
+  //VideoData _videoData;
+
   bool _fullScreenMode = false;
   bool _volumeOn = true;
 
@@ -109,9 +112,8 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
   void initState() {
     super.initState();
 
-
-    _videoData = LessonDataManager.singleton().getVideoData(widget.videoId);
-    _videoDesc = LessonDescManager.singleton().getVideoDesc(widget.videoId);
+    //_videoData = LessonDataManager.singleton().getVideoData(widget.videoId);
+    //_videoDesc = LessonDescManager.singleton().getVideoDesc(widget.videoId);
 
     waitForScreenReady();
     initFadeAnimation();
@@ -158,7 +160,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
     //print("onCurrentSecond second = $second");
 
     _currentVideoSecond = second;
-    _videoData.setPlayTime(second);
+    widget.videoData.setPlayTime(second);
 
     Provider.of<PlayerStateNotifier>(context).updatePlayTime(second);
   }
@@ -202,12 +204,13 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
   }
 
   void _loadOrCueVideo() {
-    _videoData = LessonDataManager.singleton().getVideoData(widget.videoId);
-    _videoDesc = LessonDescManager.singleton().getVideoDesc(widget.videoId);
 
-    Provider.of<PlayerStateNotifier>(context).readyVideo(widget.videoId);
+    //_videoData = LessonDataManager.singleton().getVideoData(widget.videoId);
+    //_videoDesc = LessonDescManager.singleton().getVideoDesc(widget.videoId);
 
-    _controller.loadOrCueVideo(widget.videoId, _videoData.time);
+    Provider.of<PlayerStateNotifier>(context).readyVideo(widget.videoDesc.videoKey);
+
+    _controller.loadOrCueVideo(widget.videoDesc.videoKey, widget.videoData.time);
     _showScreenOverlay(true);
   }
 
@@ -222,7 +225,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
   }
 
   void jumpPlaytime(double p) {
-    double totalTime = _videoDesc.totalPlayTime;
+    double totalTime = widget.videoDesc.totalPlayTime;
     _controller.seekTo(totalTime * p);
 
     _showScreenOverlay(true);
@@ -418,7 +421,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
                 scaleMode: YoutubeScaleMode.fitWidth,
                 // <option> fitWidth, fitHeight
                 params: YoutubeParam(
-                    videoId: widget.videoId,
+                    videoId: widget.videoDesc.videoKey,
                     showUI: false,
                     startSeconds: _currentVideoSecond, // <option>
                     autoPlay: _currentVideoSecond > 0) // <option>
@@ -480,8 +483,8 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
   }
 
   Widget _buildSimpleShow(double width, double height) {
-    double playTime = _videoData.time;
-    double totalTime = _videoDesc.totalPlayTime;
+    double playTime = widget.videoData.time;
+    double totalTime = widget.videoDesc.totalPlayTime;
 
     return Container(
       width: width,
@@ -579,8 +582,8 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
   }
 
   Widget screenOverController_bottom() {
-    double playTime = _videoData.time;
-    double totalTime = _videoDesc.totalPlayTime;
+    double playTime = widget.videoData.time;
+    double totalTime = widget.videoDesc.totalPlayTime;
     String timeText = timeFormat(playTime) + ' / ' + timeFormat(totalTime);
 
     IconData iconData = Icons.play_arrow;
@@ -633,7 +636,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
   //Note. 독립된 바텀 컨트롤러
   Widget controlBar(bool fullScreenMode) {
     double playTime = _currentVideoSecond; // _videoData.time;
-    double totalTime = _videoDesc.totalPlayTime;
+    double totalTime = widget.videoDesc.totalPlayTime;
     String timeText = timeFormat(playTime) + ' / ' + timeFormat(totalTime);
 
     IconData iconData = Icons.play_arrow;

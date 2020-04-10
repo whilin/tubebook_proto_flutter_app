@@ -6,11 +6,11 @@ import '../styles.dart';
 
 class VideoCompletedDialog extends StatelessWidget {
 
-  final VideoDesc desc;
+  final LessonVideo desc;
 
   VideoCompletedDialog(this.desc) ;
 
-  static Future<bool> showDialogImpl(BuildContext context, VideoDesc desc) async {
+  static Future<bool> showDialogImpl(BuildContext context, LessonVideo desc) async {
     bool reponse = await showDialog(
         context: context,
         builder: (BuildContext context) {

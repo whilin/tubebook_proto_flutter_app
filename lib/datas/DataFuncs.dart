@@ -11,14 +11,14 @@ List<int> getLessonProgress(LessonDesc desc)
 {
   int completed = 0;
 
-  for(var key in desc.videoList)
+  for(var key in desc.videoListEx)
   {
-    var videoData = LessonDataManager.singleton().getVideoData(key);
+    var videoData = LessonDataManager.singleton().getVideoData(key.videoKey);
     if ( videoData.completed)
       completed++;
   }
 
-  return [ desc.videoList.length, completed];
+  return [ desc.videoListEx.length, completed];
 }
 
 
@@ -26,14 +26,14 @@ bool getLessonCompleted(LessonDesc desc)
 {
   int completed = 0;
 
-  for(var key in desc.videoList)
+  for(var key in desc.videoListEx)
   {
-    var videoData = LessonDataManager.singleton().getVideoData(key);
+    var videoData = LessonDataManager.singleton().getVideoData(key.videoKey);
     if ( videoData.completed)
       completed++;
   }
 
-  return completed == desc.videoList.length;
+  return completed == desc.videoListEx.length;
 }
 
 
@@ -42,17 +42,17 @@ bool getLessonCompletedBy(LessonData data)
   LessonDesc desc = LessonDescManager.singleton().getLessonDesc (data.lessonId);
   int completed = 0;
 
-  for(var key in desc.videoList)
+  for(var key in desc.videoListEx)
   {
-    var videoData = LessonDataManager.singleton().getVideoData(key);
+    var videoData = LessonDataManager.singleton().getVideoData(key.videoKey);
     if ( videoData.completed)
       completed++;
   }
 
-  return completed == desc.videoList.length;
+  return completed == desc.videoListEx.length;
 }
 
-double getVideoProgress(VideoDesc desc) {
+double getVideoProgress(LessonVideo desc) {
   var data = LessonDataManager.singleton().getVideoData(desc.videoKey);
   double t = desc.totalPlayTime;
   double p = data.time;
@@ -61,7 +61,7 @@ double getVideoProgress(VideoDesc desc) {
 }
 
 
-double getVideoProgressMax(VideoDesc desc) {
+double getVideoProgressMax(LessonVideo desc) {
   var data = LessonDataManager.singleton().getVideoData(desc.videoKey);
   double t = desc.totalPlayTime;
   double p = data.maxTime ?? 0;

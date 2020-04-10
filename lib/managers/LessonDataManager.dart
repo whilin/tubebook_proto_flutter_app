@@ -44,7 +44,6 @@ class LessonDataManager with ChangeNotifier {
     }
   }
 
-
   VideoData getVideoData(String videoKey) {
     try {
       VideoData d = _videoDataList.firstWhere((e) => e.videoKey == videoKey);
@@ -71,7 +70,7 @@ class LessonDataManager with ChangeNotifier {
     // var list =  _lessonDataList.where((element) => element.subscribed !=null && element.subscribed ).toList(growable: false);
 
     var list = _lessonDataList
-        .where((element) => element.subscribed != null && element.subscribed && !element.completed)
+        .where((element) => element.subscribed != null && element.subscribed && !(element.completed??false))
         .toList(growable: false);
 
     return list;
@@ -81,7 +80,7 @@ class LessonDataManager with ChangeNotifier {
     // var list =  _lessonDataList.where((element) => element.subscribed !=null && element.subscribed ).toList(growable: false);
 
     var list = _lessonDataList
-        .where((element) => element.subscribed != null && element.subscribed && element.completed)
+        .where((element) => element.subscribed != null && element.subscribed && (element.completed ??false))
         .toList(growable: false);
 
     return list;

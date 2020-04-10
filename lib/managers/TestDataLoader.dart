@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import '../net/YoutubeDataLoader.dart';
+import '../net/YoutubeApi.dart';
 import 'package:youtube_api/youtube_api.dart';
 import '../datas/DataTypeDefine.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +11,8 @@ import 'package:youtube_api/_api.dart';
 class TestDataLoader {
 
   //..
-  //.. 
+  //..
+  /*
   static List<TopicDesc> loadTopicList() {
     List<TopicDesc> _topiclist = new List<TopicDesc>();
 
@@ -47,12 +48,14 @@ class TestDataLoader {
     return _topiclist;
   }
 
-  static List<VideoDesc> loadVideoList() {
-    List<VideoDesc> _videolist = new List<VideoDesc>();
+   */
 
-    VideoDesc desc;
-
-    {
+//  static List<VideoDesc> loadVideoList() {
+//    List<VideoDesc> _videolist = new List<VideoDesc>();
+//
+//    VideoDesc desc;
+//
+//    {
 //      desc = VideoDesc()
 //        ..videoKey = 'nRsxWt3BWzM'
 //        ..comment = 'Dart언어 한시간만에 건너뛰기';
@@ -67,10 +70,10 @@ class TestDataLoader {
 //        ..videoKey = 'AKOUDHZsBP0'
 //        ..comment = 'Dart언어 기본 강좌 네번째 | Flutter Stream';
 //      _videolist.add(desc);
-    }
-
-    return _videolist;
-  }
+//    }
+//
+//    return _videolist;
+//  }
 
   static List<LessonDesc> loadLessonList() {
     List<LessonDesc> _lessonlist = new List<LessonDesc>();
@@ -84,7 +87,7 @@ class TestDataLoader {
       ..description = '플러터 입문자를 위한 가이드 강좌입니다'
       ..recommanded = 2
       ..imageAssetPath = ''
-      ..videoList = ['nRsxWt3BWzM', 'CCMuCvcOfnQ', 'AKOUDHZsBP0']
+      //..videoList = ['nRsxWt3BWzM', 'CCMuCvcOfnQ', 'AKOUDHZsBP0']
       ..level = LessonLevel.Beginnger
       ..tags = {'Widget'};
 

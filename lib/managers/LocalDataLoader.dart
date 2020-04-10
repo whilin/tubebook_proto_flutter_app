@@ -10,7 +10,7 @@ class LocalDataLoader {
 
   List<TopicDesc> topicList = List<TopicDesc>();
   List<LessonDesc> lessonList = List<LessonDesc>();
-  List<VideoDesc> videoList = List<VideoDesc>();
+ // List<VideoDesc> videoList = List<VideoDesc>();
 
   Future<void> loadDataSets() async {
 
@@ -21,7 +21,7 @@ class LocalDataLoader {
     _loadLessonList(lessonJson);
 
     var videoJson = await _loadFile('v1_video.json');
-    _loadVideoList(videoJson);
+ //   _loadVideoList(videoJson);
   }
 
   Future<String> _loadFile(String filename) async {
@@ -45,13 +45,13 @@ class LocalDataLoader {
       lessonList.add(desc);
     }
   }
-
-  void _loadVideoList(String jsonString) {
-
-    List<dynamic>  jsonlistObj =  jsonDecode(jsonString);
-    for(dynamic jsonObj in jsonlistObj)  {
-      VideoDesc desc = VideoDesc.fromJson(jsonObj);
-      videoList.add(desc);
-    }
-  }
+//
+//  void _loadVideoList(String jsonString) {
+//
+//    List<dynamic>  jsonlistObj =  jsonDecode(jsonString);
+//    for(dynamic jsonObj in jsonlistObj)  {
+//      VideoDesc desc = VideoDesc.fromJson(jsonObj);
+//      videoList.add(desc);
+//    }
+//  }
 }

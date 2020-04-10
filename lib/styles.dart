@@ -127,9 +127,17 @@ abstract class Styles {
   static const sectionTitle = TextStyle(
     color: Colors.white60,
     fontFamily: 'NotoSans',
-    fontSize: 15,
+    fontSize: 16,
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.w700,
+  );
+
+  static const sectionText = TextStyle(
+    color: Color.fromRGBO(128, 128, 128, 1),
+    fontFamily: 'NotoSans',
+    fontSize: 15,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
   );
 
 
@@ -142,13 +150,6 @@ abstract class Styles {
   );
 
 
-  static const minorText = TextStyle(
-    color: Color.fromRGBO(128, 128, 128, 1),
-    fontFamily: 'NotoSans',
-    fontSize: 16,
-    fontStyle: FontStyle.normal,
-    fontWeight: FontWeight.normal,
-  );
 
   static const headlineName = TextStyle(
     color: Color.fromRGBO(255, 255, 255, 0.9),

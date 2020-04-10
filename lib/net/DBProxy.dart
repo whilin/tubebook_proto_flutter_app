@@ -26,15 +26,16 @@ abstract class DataManager {
 
 class DBProxy {
 
+  static const String dbName = "MyTubeBook";
+  static const String domain =
+      "ec2-13-124-95-20.ap-northeast-2.compute.amazonaws.com:8080";
+
+
   static const OpName_insertMany = 'insertMany';
   static const OpName_insertOne= 'insertOne';
   static const OpName_find = 'find';
   static const OpName_findOneAndUpdate = 'findOneAndUpdate';
   static const OpName_findOneAndDelete = 'findOneAndDelete';
-
-  static const String dbName = "MyTubeBook";
-  static const String domain =
-      "ec2-13-124-95-20.ap-northeast-2.compute.amazonaws.com:8080";
 
   String getUrl(String collectionName, String opName) {
     return "http://$domain/mongoApi/$dbName/$collectionName/${opName.toString()}";

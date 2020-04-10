@@ -2,6 +2,7 @@ import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mydemo_tabnavi2/managers/AssetsManager.dart';
 import 'package:mydemo_tabnavi2/managers/LessonDataManager.dart';
 import 'package:mydemo_tabnavi2/managers/LessonDescManager.dart';
 import 'package:mydemo_tabnavi2/datas/DataFuncs.dart';
@@ -50,7 +51,7 @@ class SearchPage extends StatelessWidget {
                         Container(
                           height: 20,
                         ),
-                        _buildSection(context, 'CrossPlatformApp'),
+                        _buildSection(context, 'HybridApp'),
                         Container(
                           height: 20,
                         ),
@@ -58,7 +59,23 @@ class SearchPage extends StatelessWidget {
                         Container(
                           height: 20,
                         ),
-                        _buildSection(context, 'A•I')
+                        _buildSection(context, 'ML'),
+                        Container(
+                          height: 20,
+                        ),
+                        _buildSection(context, 'Backend'),
+                        Container(
+                          height: 20,
+                        ),
+                        _buildSection(context, 'Talk'),
+                        Container(
+                          height: 20,
+                        ),
+                        _buildSection(context, 'Cloud'),
+                        Container(
+                          height: 20,
+                        ),
+                        _buildSection(context, 'Analytics'),
 
                         //_buildSubSectionTitle('Android App Development')
                       ],
@@ -113,6 +130,9 @@ class SearchPage extends StatelessWidget {
   }
 
   Widget _buildTopicItem(BuildContext context, TopicDesc desc) {
+
+    int count = LessonDescManager.singleton().getLessonCountByTopicId(desc.topicId);
+
     return GestureDetector(
         onTap: () {
           onClickTopic(context, desc);
@@ -124,13 +144,17 @@ class SearchPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(children: [
+                new CircleAvatar(
+                    radius: 10,
+                    backgroundImage: AssetsManager.getTopicLogo(desc.topicId)),
+                new Container(width: 5,),
                 Text(
                   desc.name,
                   style: Styles.font16Text,
                 ),
                 Expanded(flex: 1, child: Container()),
                 Text(
-                  '3개 강좌',
+                  '${count}개 강좌',
                   style: Styles.font16Text,
                 )
               ]),

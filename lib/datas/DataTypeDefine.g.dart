@@ -7,87 +7,31 @@ part of 'DataTypeDefine.dart';
 // **************************************************************************
 
 DBEntity _$DBEntityFromJson(Map<String, dynamic> json) {
-  return DBEntity();
+  return DBEntity()..id = json['_id'] as String;
 }
 
-Map<String, dynamic> _$DBEntityToJson(DBEntity instance) => <String, dynamic>{};
+Map<String, dynamic> _$DBEntityToJson(DBEntity instance) => <String, dynamic>{
+      '_id': instance.id,
+    };
 
 TopicDesc _$TopicDescFromJson(Map<String, dynamic> json) {
   return TopicDesc()
+    ..id = json['_id'] as String
     ..topicId = json['topicId'] as String
-    ..section = json['section'] as String
     ..name = json['name'] as String
-    ..description = json['description'] as String
-    ..imageAssetPath = json['imageAssetPath'] as String
-    ..tags = (json['tags'] as List)?.map((e) => e as String)?.toList();
+    ..section = json['section'] as String
+    ..topicType = _$enumDecodeNullable(_$TopicTypeEnumMap, json['topicType']) ??
+        TopicType.Category
+    ..channelId = json['channelId'] as String;
 }
 
 Map<String, dynamic> _$TopicDescToJson(TopicDesc instance) => <String, dynamic>{
+      '_id': instance.id,
       'topicId': instance.topicId,
+      'name': instance.name,
       'section': instance.section,
-      'name': instance.name,
-      'description': instance.description,
-      'imageAssetPath': instance.imageAssetPath,
-      'tags': instance.tags,
-    };
-
-ChannelDesc _$ChannelDescFromJson(Map<String, dynamic> json) {
-  return ChannelDesc()
-    ..channelId = json['channelId'] as String
-    ..name = json['name'] as String;
-}
-
-Map<String, dynamic> _$ChannelDescToJson(ChannelDesc instance) =>
-    <String, dynamic>{
+      'topicType': _$TopicTypeEnumMap[instance.topicType],
       'channelId': instance.channelId,
-      'name': instance.name,
-    };
-
-LessonVideo _$LessonVideoFromJson(Map<String, dynamic> json) {
-  return LessonVideo()
-    ..videoKey = json['videoKey'] as String
-    ..title = json['title'] as String;
-}
-
-Map<String, dynamic> _$LessonVideoToJson(LessonVideo instance) =>
-    <String, dynamic>{
-      'videoKey': instance.videoKey,
-      'title': instance.title,
-    };
-
-LessonDesc _$LessonDescFromJson(Map<String, dynamic> json) {
-  return LessonDesc()
-    ..lessonId = json['lessonId'] as String
-    ..mainTopicId = json['mainTopicId'] as String
-    ..youtuberId = json['youtuberId'] as String
-    ..title = json['title'] as String
-    ..description = json['description'] as String
-    ..tags = (json['tags'] as List)?.map((e) => e as String)?.toSet()
-    ..level = _$enumDecodeNullable(_$LessonLevelEnumMap, json['level'])
-    ..recommanded = json['recommanded'] as int
-    ..imageAssetPath = json['imageAssetPath'] as String
-    ..videoList = (json['videoList'] as List)?.map((e) => e as String)?.toList()
-    ..publish = json['publish'] as int
-    ..videoListEx = (json['videoListEx'] as List)
-        ?.map((e) =>
-            e == null ? null : LessonVideo.fromJson(e as Map<String, dynamic>))
-        ?.toList();
-}
-
-Map<String, dynamic> _$LessonDescToJson(LessonDesc instance) =>
-    <String, dynamic>{
-      'lessonId': instance.lessonId,
-      'mainTopicId': instance.mainTopicId,
-      'youtuberId': instance.youtuberId,
-      'title': instance.title,
-      'description': instance.description,
-      'tags': instance.tags?.toList(),
-      'level': _$LessonLevelEnumMap[instance.level],
-      'recommanded': instance.recommanded,
-      'imageAssetPath': instance.imageAssetPath,
-      'videoList': instance.videoList,
-      'publish': instance.publish,
-      'videoListEx': instance.videoListEx,
     };
 
 T _$enumDecode<T>(
@@ -122,32 +66,90 @@ T _$enumDecodeNullable<T>(
   return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
+const _$TopicTypeEnumMap = {
+  TopicType.Category: 'Category',
+  TopicType.Curation: 'Curation',
+};
+
+ChannelDesc _$ChannelDescFromJson(Map<String, dynamic> json) {
+  return ChannelDesc()
+    ..id = json['_id'] as String
+    ..channelId = json['channelId'] as String
+    ..name = json['name'] as String
+    ..channelType =
+        _$enumDecodeNullable(_$ChannelTypeEnumMap, json['channelType']) ??
+            ChannelType.Creator;
+}
+
+Map<String, dynamic> _$ChannelDescToJson(ChannelDesc instance) =>
+    <String, dynamic>{
+      '_id': instance.id,
+      'channelId': instance.channelId,
+      'name': instance.name,
+      'channelType': _$ChannelTypeEnumMap[instance.channelType],
+    };
+
+const _$ChannelTypeEnumMap = {
+  ChannelType.Creator: 'Creator',
+  ChannelType.Curator: 'Curator',
+};
+
+LessonVideo _$LessonVideoFromJson(Map<String, dynamic> json) {
+  return LessonVideo()
+    ..videoKey = json['videoKey'] as String
+    ..title = json['title'] as String;
+}
+
+Map<String, dynamic> _$LessonVideoToJson(LessonVideo instance) =>
+    <String, dynamic>{
+      'videoKey': instance.videoKey,
+      'title': instance.title,
+    };
+
+LessonDesc _$LessonDescFromJson(Map<String, dynamic> json) {
+  return LessonDesc()
+    ..id = json['_id'] as String
+    ..lessonId = json['lessonId'] as String
+    ..mainTopicId = json['mainTopicId'] as String
+    ..subTopicId = json['subTopicId'] as String
+    ..youtuberId = json['youtuberId'] as String
+    ..title = json['title'] as String
+    ..description = json['description'] as String
+    ..detailDescription = json['detailDescription'] as String
+    ..tags = (json['tags'] as List)?.map((e) => e as String)?.toSet()
+    ..level = _$enumDecodeNullable(_$LessonLevelEnumMap, json['level'])
+    ..recommanded = json['recommanded'] as int
+    ..imageAssetPath = json['imageAssetPath'] as String
+    ..publish = json['publish'] as int
+    ..videoListEx = (json['videoListEx'] as List)
+        ?.map((e) =>
+            e == null ? null : LessonVideo.fromJson(e as Map<String, dynamic>))
+        ?.toList();
+}
+
+Map<String, dynamic> _$LessonDescToJson(LessonDesc instance) =>
+    <String, dynamic>{
+      '_id': instance.id,
+      'lessonId': instance.lessonId,
+      'mainTopicId': instance.mainTopicId,
+      'subTopicId': instance.subTopicId,
+      'youtuberId': instance.youtuberId,
+      'title': instance.title,
+      'description': instance.description,
+      'detailDescription': instance.detailDescription,
+      'tags': instance.tags?.toList(),
+      'level': _$LessonLevelEnumMap[instance.level],
+      'recommanded': instance.recommanded,
+      'imageAssetPath': instance.imageAssetPath,
+      'publish': instance.publish,
+      'videoListEx': instance.videoListEx,
+    };
+
 const _$LessonLevelEnumMap = {
   LessonLevel.Beginnger: 'Beginnger',
   LessonLevel.Intermediate: 'Intermediate',
   LessonLevel.Advanced: 'Advanced',
 };
-
-VideoDesc _$VideoDescFromJson(Map<String, dynamic> json) {
-  return VideoDesc()
-    ..videoKey = json['videoKey'] as String
-    ..channelId = json['channelId'] as String
-    ..description = json['description'] as String
-    ..title = json['title'] as String
-    ..hintTopic = json['hintTopic'] as String
-    ..hintLesson = json['hintLesson'] as String
-    ..markTag = json['markTag'] as int;
-}
-
-Map<String, dynamic> _$VideoDescToJson(VideoDesc instance) => <String, dynamic>{
-      'videoKey': instance.videoKey,
-      'channelId': instance.channelId,
-      'description': instance.description,
-      'title': instance.title,
-      'hintTopic': instance.hintTopic,
-      'hintLesson': instance.hintLesson,
-      'markTag': instance.markTag,
-    };
 
 TopicData _$TopicDataFromJson(Map<String, dynamic> json) {
   return TopicData(
@@ -183,9 +185,9 @@ VideoData _$VideoDataFromJson(Map<String, dynamic> json) {
   return VideoData(
     json['videoKey'] as String,
   )
-    ..completed = json['completed'] as bool
-    ..maxTime = (json['maxTime'] as num)?.toDouble()
-    ..time = (json['time'] as num)?.toDouble();
+    ..completed = json['completed'] as bool ?? false
+    ..maxTime = (json['maxTime'] as num)?.toDouble() ?? 0.0
+    ..time = (json['time'] as num)?.toDouble() ?? 0.0;
 }
 
 Map<String, dynamic> _$VideoDataToJson(VideoData instance) => <String, dynamic>{

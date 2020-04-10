@@ -39,12 +39,12 @@ class LessonPage extends StatefulWidget {
 
 class LessonPageState extends State<LessonPage>
     with VideoPlayerControllerInterface, TickerProviderStateMixin {
-  List<VideoDesc> videoDescList = [];
+  List<LessonVideo> videoDescList = [];
   List<VideoData> videoDataList = [];
 
   int activeIndex = -1;
   VideoData activeData = null;
-  VideoDesc activeDesc = null;
+  LessonVideo activeDesc = null;
 
   bool _fullScreenMode = false;
 
@@ -59,8 +59,10 @@ class LessonPageState extends State<LessonPage>
   void initState() {
     super.initState();
 
-    videoDescList =
-        LessonDescManager.singleton().queryVideoList(widget.desc.videoList);
+//    videoDescList =
+//        LessonDescManager.singleton().queryVideoList(widget.desc.videoList);
+//
+    videoDescList = widget.desc.videoListEx;
     for (var desc in videoDescList) {
       videoDataList
           .add(LessonDataManager.singleton().getVideoData(desc.videoKey));
@@ -78,14 +80,14 @@ class LessonPageState extends State<LessonPage>
     });
   }
 
-  String getActiveVideoKey() {
+  LessonVideo getActiveVideoKey() {
     if (activeIndex >= 0)
-      return videoDescList[activeIndex].videoKey;
+      return videoDescList[activeIndex];
     else
-      return "";
+      return null;
   }
 
-  void OnSelectVideo(VideoDesc videoDesc) {
+  void OnSelectVideo(LessonVideo videoDesc) {
     setState(() {
       int index =
           videoDescList.indexWhere((q) => q.videoKey == videoDesc.videoKey);
@@ -162,7 +164,7 @@ class LessonPageState extends State<LessonPage>
                 child: Stack(children: [
                   Column(mainAxisSize: MainAxisSize.min, children: [
                     VideoPlayerV2(
-                      videoId: getActiveVideoKey(),
+                      videoDesc: getActiveVideoKey(),
                       controllerInterface: this,
                     ),
                     //_buildTabSystem()[0],
@@ -255,7 +257,7 @@ class LessonPageState extends State<LessonPage>
         color: Colors.black45,
         alignment: Alignment.centerLeft,
         child: Text(
-          '◉ ' + activeDesc.snippet.title,
+          '◉ ' + activeDesc.title,
           style: Styles.font12Text,
         ),
       );
@@ -328,10 +330,14 @@ class LessonPageState extends State<LessonPage>
 
     descList = [
       _buildSpace(),
-      _buildTitle('◼︎ 레슨에 대한 소개'),
-      _buildDesc(
-          '프로그램을 처음 배우는 사람들을 위한개 강의 입니다.언어에 대한 지식이 없어도 처음 부터 쉽게 따라할 수 있도록 만들어 졌습니다'),
-      _buildTitle('◼︎ 크리에이터 소개'),
+      
+//      _buildTitle('◼︎ 레슨에 대한 소개'),
+//      _buildDesc(
+//          '프로그램을 처음 배우는 사람들을 위한개 강의 입니다.언어에 대한 지식이 없어도 처음 부터 쉽게 따라할 수 있도록 만들어 졌습니다'),
+//      _buildTitle('◼︎ 크리에이터 소개'),
+//      소개
+
+      _buildTitle(widget.desc.detailDescription ?? ''),
     ];
 
     return descList;

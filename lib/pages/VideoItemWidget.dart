@@ -10,8 +10,8 @@ import '../styles.dart';
 import '../widgets/okProgressBar.dart';
 
 class VideoItemWidget extends StatelessWidget {
-  final VideoDesc desc;
-  final void Function(VideoDesc) onSelected;
+  final LessonVideo desc;
+  final void Function(LessonVideo) onSelected;
   final bool isPlaying;
 
   VideoItemWidget(this.desc,this.isPlaying, this.onSelected);
@@ -22,7 +22,7 @@ class VideoItemWidget extends StatelessWidget {
     return _videoItem(desc);
   }
 
-  Widget _videoItem(VideoDesc desc) {
+  Widget _videoItem(LessonVideo desc) {
 
     Image thumnail = Image.network(
       YoutubePlayer.getThumbnail(
@@ -100,7 +100,7 @@ class VideoItemWidget extends StatelessWidget {
                               left: 10,
                               top: 15,
                               right: 20,
-                              child: Text(desc.snippet.title,
+                              child: Text(desc.title,
                                   style: Styles.font12Text,
                                   overflow: TextOverflow.visible)),
                           Positioned(

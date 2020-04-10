@@ -80,6 +80,19 @@ flutter:
     - assets/datasets/v1_video.json
     - assets/datasets/v1_topic.json
 
+    - assets/topic_logo/topic_aws.png
+    - assets/topic_logo/topic_flutter.png
+    - assets/topic_logo/topic_go.png
+    - assets/topic_logo/topic_java.png
+    - assets/topic_logo/topic_kotlin.png
+    - assets/topic_logo/topic_objc.png
+    - assets/topic_logo/topic_react_js.png
+    - assets/topic_logo/topic_react_native.png
+    - assets/topic_logo/topic_swift.png
+    - assets/topic_logo/topic_tensorflow.png
+    - assets/topic_logo/topic_php.png
+
+
   fonts:
     - family: NotoSans
       fonts:

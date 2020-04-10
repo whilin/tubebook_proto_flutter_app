@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mydemo_tabnavi2/pages/splash_page.dart';
 import 'managers/LessonDataManager.dart';
 import 'pages/home_page.dart';
 import 'package:mydemo_tabnavi2/styles.dart';
@@ -15,7 +16,9 @@ import 'sandbag/sliver_app_bar_page.dart';
 
 void main() {
 
-  LessonDescManager.singleton().initializeMetaData2();
+  //LessonDescManager.singleton().initializeMetaData2();
+  LessonDescManager.singleton().initializeMetaDataFromServer();
+
   LessonDataManager.singleton().initLocalPlayDb();
 
 //  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -80,13 +83,13 @@ class MyMaterialApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'MyTubeBook',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         backgroundColor: Colors.yellow
       ),
-      home: MyMaterialAppHome(title: 'Flutter Demo Home Page'),
+      home: MyMaterialAppHome(title: 'MyTubeBook'),
     );
   }
 }
@@ -137,9 +140,13 @@ class _MyMaterialAppHomeState extends State<MyMaterialAppHome>
       // app suspended (not used in iOS)
     }
   }
-
   @override
   Widget build(BuildContext context) {
+    return buildMain(context);
+  }
+
+
+  Widget buildMain(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.red,
         bottomNavigationBar: BottomNavigationBar(

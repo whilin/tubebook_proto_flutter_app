@@ -50,10 +50,10 @@ class TopicCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     image: DecorationImage(
-                      fit: BoxFit.fitWidth,
+                      fit: BoxFit.contain,
                       colorFilter: null,
                       //isInSeason ? null : Styles.desaturatedColorFilter,
-                      image: getImageAsset(desc.imageAssetPath),
+                      image: getTopicLogo(desc.topicId),
                     ),
                   ),
                 )),
@@ -92,36 +92,38 @@ class TopicCard extends StatelessWidget {
   }
 }
 
-class HotLessonCard extends StatelessWidget {
+
+class LessonBannerCard extends StatelessWidget {
   /// Veggie to be displayed by the card.
   final LessonDesc desc;
   final double width;
   final double height;
   final bool page;
 
-  HotLessonCard.tile(this.desc, {this.width, this.height})
+  LessonBannerCard.tile(this.desc, {this.width, this.height})
       : this.page = false {}
 
-  HotLessonCard.page(this.desc, {this.width, this.height}) : this.page = true {}
+  LessonBannerCard.page(this.desc, {this.width, this.height}) : this.page = true {}
+
+  void onClick(BuildContext context) {
+
+    Navigator.of(context).push<void>(CupertinoPageRoute(
+      builder: (context) => new LessonPage(
+          desc: desc,
+          data: LessonDataManager.singleton().getLessonData(desc.lessonId)),
+      fullscreenDialog: true,
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
     String bgImage = YoutubePlayer.getThumbnail(
-        videoId: desc.videoList[0], quality: ThumbnailQuality.standard);
+        videoId: desc.videoListEx[0].videoKey, quality: ThumbnailQuality.standard);
 
     return PressableCard(
       onPressed: () {
-//        Navigator.of(context).push<void>(MaterialPageRoute(
-//          builder: (context) => new TopicPage(desc),
-//          fullscreenDialog: false,
-//        ));
 
-        Navigator.of(context).push<void>(CupertinoPageRoute(
-          builder: (context) => new LessonPage(
-              desc: desc,
-              data: LessonDataManager.singleton().getLessonData(desc.lessonId)),
-          fullscreenDialog: true,
-        ));
+        onClick(context);
       },
       child: Stack(
         children: [
@@ -156,6 +158,83 @@ class HotLessonCard extends StatelessWidget {
             Text(
               desc.title,
               style: Styles.font18Text,
+            ),
+//            Text(
+//              desc.description,
+//              style: Styles.font15Text,
+//            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class VideoBannerCard extends StatelessWidget {
+  /// Veggie to be displayed by the card.
+
+  final LessonDesc lesson;
+  final LessonVideo video;
+  final double width;
+  final double height;
+  final bool page;
+
+  VideoBannerCard.page(this.lesson, this.video, {this.width, this.height}) : this.page = true {}
+
+  void onClick(BuildContext context) {
+
+    Navigator.of(context).push<void>(CupertinoPageRoute(
+      builder: (context) => new LessonPage(
+          desc: lesson,
+          data: LessonDataManager.singleton().getLessonData(lesson.lessonId)),
+      fullscreenDialog: true,
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String bgImage = YoutubePlayer.getThumbnail(
+        videoId: video.videoKey, quality: ThumbnailQuality.standard);
+
+    return PressableCard(
+      onPressed: () {
+
+        onClick(context);
+      },
+      child: Stack(
+        children: [
+          Container(
+            width: width,
+            height: height,
+            child: Image.network(bgImage, fit: BoxFit.fitWidth),
+            //height: 200, //isInSeason ? 300 : 150,
+            decoration: BoxDecoration(),
+          ),
+          Positioned(
+            height: 50,
+            bottom: 10,
+            left: 0,
+            right: 0,
+            child: _buildDetails(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetails() {
+    return FrostyBackground(
+      color: Color(0x00ffffff),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              video.title,
+              style: Styles.font16Text,
             ),
 //            Text(
 //              desc.description,
