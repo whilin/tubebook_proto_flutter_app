@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   ListView buildList(LessonDescManager model) {
     return ListView(scrollDirection: Axis.vertical, children: [
       PagingBannerLessonList.hotTrend('HotTrend',
-          minorTitle: 'HOT TRENDING', majorTitle: '앞서가는 개발자들이 봐야할 최신 강의'),
+          minorTitle: 'NEWEST LESSONS', majorTitle: '앞서가는 개발자들이 봐야할 최신 강의'),
       Container(
         height: 20,
       ),

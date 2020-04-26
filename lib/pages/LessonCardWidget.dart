@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mydemo_tabnavi2/net/YoutubeApi.dart';
 import 'package:mydemo_tabnavi2/widgets/cardWidgets.dart';
 import 'package:mydemo_tabnavi2/widgets/widgets.dart';
 import 'package:mydemo_tabnavi2/datas/DataTypeDefine.dart';
@@ -89,7 +90,7 @@ class _LessonCardWidgetState extends State<LessonCardWidget>
 
   @override
   Widget build(BuildContext context) {
-    String bgImage = YoutubePlayer.getThumbnail(
+    String bgImage = YoutubeApi.getThumbnail(
         videoId: widget.desc.videoListEx[0].videoKey, quality: ThumbnailQuality.standard);
 
     var width = MediaQuery.of(context).size.width - 10;

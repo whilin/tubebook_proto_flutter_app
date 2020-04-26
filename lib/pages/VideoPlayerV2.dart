@@ -365,7 +365,7 @@ class VideoPlayerV2State extends State<VideoPlayerV2>
       width = size.width;
       height = toHDHeight(width);
     } else {
-      height = size.height;
+      height = size.height-24; //TODO 안드로이드 풀 스크린에서 왜 24pixel overflow 가 생기는지 알수 없음
       width = toHDWidth(height);
     }
 

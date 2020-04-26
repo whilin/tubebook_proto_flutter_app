@@ -77,6 +77,11 @@ class MyApp extends StatelessWidget {
 }
  */
 
+final routes = {
+  '/splash' : (BuildContext context) => SplashPage(),
+  '/home' : (BuildContext context) => MyMaterialAppHome(title: 'MyTubeBook'),
+};
+
 
 class MyMaterialApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -89,7 +94,11 @@ class MyMaterialApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         backgroundColor: Colors.yellow
       ),
-      home: MyMaterialAppHome(title: 'MyTubeBook'),
+
+      initialRoute: '/splash',
+      routes: routes
+
+      //home: MyMaterialAppHome(title: 'MyTubeBook'),
     );
   }
 }

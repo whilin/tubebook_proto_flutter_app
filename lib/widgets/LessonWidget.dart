@@ -143,7 +143,7 @@ abstract class LessonWidgets {
               child: CircleAvatar(
                 radius: 30,
                 backgroundImage:
-                channelDesc.snippet !=null ? NetworkImage(channelDesc.snippet.getThumnail(level: 0))
+                channelDesc.yt_thumnail_default_url !=null ? NetworkImage(channelDesc.yt_thumnail_default_url)
                     : AssetImage('assets/images/person-placeholder.jpg'),
               ),
             ),

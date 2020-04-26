@@ -55,7 +55,7 @@ class VideoCompletedDialog extends StatelessWidget {
   }
 
   Widget _buildMessage() {
-    String title = '${desc.snippet.title}';
+    String title = '${desc.title}';
 
     return Container(
       alignment: Alignment.center,

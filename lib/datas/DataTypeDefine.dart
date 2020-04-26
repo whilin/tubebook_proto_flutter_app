@@ -65,9 +65,13 @@ class ChannelDesc  extends DBEntity
 {
   String channelId;
   String name;
-
   @JsonKey(defaultValue: ChannelType.Creator)
   ChannelType channelType;
+
+  String yt_thumnail_default_url;
+  String yt_thumnail_medium_url;
+  String yt_thumnail_high_url;
+  String yt_publishedAt;
 
   ChannelDesc();
 
@@ -75,8 +79,8 @@ class ChannelDesc  extends DBEntity
   Map<String, dynamic> toJson() => _$ChannelDescToJson(this);
 
 
-  @JsonKey(ignore: true)
-  YoutubeChannelData snippet;
+ // @JsonKey(ignore: true)
+ // YoutubeChannelData snippet;
 }
 
 
@@ -85,33 +89,46 @@ class LessonVideo {
   String videoKey;
   String title;
 
+  String yt_title;
+  String yt_duration;
+  String yt_thumnail_default_url;
+  String yt_thumnail_medium_url;
+  String yt_thumnail_high_url;
+  String yt_publishedAt;
+
+  int durationH;
+  int durationM;
+  int durationS;
+
   LessonVideo();
 
   factory LessonVideo.fromJson(Map<String, dynamic> json) => _$LessonVideoFromJson(json);
   Map<String, dynamic> toJson() =>_$LessonVideoToJson(this);
 
-  @JsonKey(ignore: true)
-  YoutubeVideoData snippet;
+ // @JsonKey(ignore: true)
+ // YoutubeVideoData snippet;
 
 
   double get totalPlayTime {
-    if(snippet==null)
+
+    if(yt_duration==null)
         return 1;
 
-    return snippet.durationH * 60.0 * 60.0 + snippet.durationM * 60.0 + snippet.durationS;
+    return durationH * 60.0 * 60.0 + durationM * 60.0 + durationS;
   }
 
   String get playTimeText {
     String text = '';
-    if(snippet ==null)
+    if(yt_duration ==null)
         return text;
 
-    if(snippet.durationH > 0)
-      text += '${snippet.durationH}시간 ';
+    if(durationH > 0)
+      text += '${durationH}시간 ';
 
-    text += '${snippet.durationM}분 ${snippet.durationS}초';
+    text += '${durationM}분 ${durationS}초';
     return text;
   }
+
 }
 
 @JsonSerializable()
@@ -146,6 +163,7 @@ class LessonDesc  extends DBEntity
   factory LessonDesc.fromJson(Map<String, dynamic> json) => _$LessonDescFromJson(json);
   Map<String, dynamic> toJson() => _$LessonDescToJson(this);
 }
+
 
 /*
 @JsonSerializable()

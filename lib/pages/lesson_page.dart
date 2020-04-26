@@ -192,7 +192,7 @@ class LessonPageState extends State<LessonPage>
   }
 
   Widget _buildSubscribeButton() {
-    if (!widget.data.subscribed) {
+    if (!widget.data.subscribed && !_fullScreenMode) {
       return Positioned(
         bottom: 0,
         right: 0,
@@ -225,15 +225,16 @@ class LessonPageState extends State<LessonPage>
       Tab(text: '레슨 상세 설명'),
     ]);
 
-    var tabView = Container(
-        height: 500,
-        child: TabBarView(
-          controller: _controller,
-          children: <Widget>[
-            _buildVideoList(),
-            Icon(Icons.directions_transit),
-          ],
-        ));
+//
+//    var tabView = Container(
+//        height: 500,
+//        child: TabBarView(
+//          controller: _controller,
+//          children: <Widget>[
+//            _buildVideoList(),
+//            Icon(Icons.directions_transit),
+//          ],
+//        ));
 
     return [tabBar];
   }

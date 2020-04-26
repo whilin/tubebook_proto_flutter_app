@@ -176,14 +176,14 @@ class YoutubeApi {
     return _singleton;
   }
 
-  Future loadVideoDetailInfo(List<LessonVideo> videos) async
-  {
-    for(var v in videos) {
-
-      YoutubeVideoData info = await getVieoInfo(v.videoKey);
-      v.snippet = info;
-    }
-  }
+//  Future loadVideoDetailInfo(List<LessonVideo> videos) async
+//  {
+//    for(var v in videos) {
+//
+//      YoutubeVideoData info = await getVieoInfo(v.videoKey);
+//      v.snippet = info;
+//    }
+//  }
 
   Future<YoutubeVideoData> getVieoInfo(String videoKey) async
   {

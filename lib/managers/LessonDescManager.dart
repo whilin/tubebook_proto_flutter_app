@@ -144,13 +144,14 @@ class LessonDescManager extends DataManager with ChangeNotifier {
 
     notifyListeners();
 
-    await loadYoutubeInfo();
-    await loadChannelInfo();
+   // await loadYoutubeInfo();
+   // await loadChannelInfo();
 
     notifyListeners();
 
   }
 
+  /*
   void loadYoutubeInfo() async {
     for(var lesson in _lessonList) {
       await YoutubeApi.singleton().loadVideoDetailInfo(lesson.videoListEx);
@@ -164,6 +165,7 @@ class LessonDescManager extends DataManager with ChangeNotifier {
         lesson.snippet= await YoutubeApi.singleton().getChannelInfo(lesson.channelId);
     }
   }
+*/
 
   Future<bool> loadChannelFromServer() async {
 
